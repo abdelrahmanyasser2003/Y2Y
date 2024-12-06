@@ -13,30 +13,31 @@ class _PolicyofprivacyState extends State<Policyofprivacy> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: cornflowerblue,
-      appBar: AppBar(
-          backgroundColor: cornflowerblue,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset("assets/img/White Logo Icon.png"),
-          )),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
+            const Padding(padding: EdgeInsets.only(top: 1)),
+            Image.asset(
+              "assets/img/ytylogo.png",
+              width: 150,
+              height: 150,
+            ),
             Container(
               margin: const EdgeInsets.only(left: 15),
               child: const Text(
-                "Privacy Of Policy",
+                "Privacy Policy",
                 style: TextStyle(
-                    fontSize: 30, fontWeight: FontWeight.bold, color: white),
+                    fontSize: 30, fontWeight: FontWeight.w700, color: white,                            fontFamily: "Montserrat",
+),
               ),
             ),
             Center(
               child: Container(
-                margin: const EdgeInsets.only(top: 15),
+                padding: const EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 width: 329,
-                height: 500,
+                height: 450,
                 decoration: BoxDecoration(
                     color: white, borderRadius: BorderRadius.circular(10)),
                 child: const SingleChildScrollView(
@@ -72,9 +73,6 @@ class _PolicyofprivacyState extends State<Policyofprivacy> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: SizedBox(
@@ -89,8 +87,13 @@ class _PolicyofprivacyState extends State<Policyofprivacy> {
                         borderRadius: BorderRadius.circular(7))),
                   ),
                   child: const Text(
-                    "Nesxt",
+                    "Next",
                     style: TextStyle(
+                      fontFamily: "Poppins",
+                                                              fontWeight: FontWeight.w500,
+
+
+                      
                       fontSize: 19,
                       color: white,
                     ),

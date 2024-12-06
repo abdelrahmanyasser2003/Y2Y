@@ -12,31 +12,32 @@ class Forgetpassword extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              const Padding(padding: EdgeInsets.only(top: 10)),
+            const Padding(padding: EdgeInsets.only(top: 1)),
             Image.asset(
               "assets/img/ytylogo.png",
-              width:150,
+              width: 150,
               height: 150,
             ),
-            const SizedBox(height: 80,),
+            const SizedBox(
+              height: 80,
+            ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.only(top: 40),
+              margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
               width: 300,
-              height: 310,
+              height: 280,
               decoration: BoxDecoration(
-              color: white,
-              borderRadius: BorderRadius.circular(10)
-              ),
+                  color: white, borderRadius: BorderRadius.circular(10)),
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         "Forget Password",
                         style: TextStyle(
+                          fontFamily: "Montserrat",
                           fontSize: 20,
                           color: cornflowerblue,
                           fontWeight: FontWeight.bold,
@@ -45,18 +46,23 @@ class Forgetpassword extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                        TextField(
+                      TextFormField(
+                        cursorColor: Colors.black,
                         keyboardType: TextInputType.text,
-                        textInputAction: TextInputAction.next,
+                        style: const TextStyle(color: Colors.black),
+                        textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           hintText: "Enter Your Email or Phone Number ",
-                          hintStyle: const TextStyle(color: cornflowerblue, fontSize: 12),
+                          hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: "Lato"),
                           enabledBorder: OutlineInputBorder(
                             borderSide: Divider.createBorderSide(context),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: cornflowerblue,
+                              color: Colors.grey,
                             ),
                           ),
                           filled: true,
@@ -72,7 +78,6 @@ class Forgetpassword extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(context, "/Enterthecode");
-
                           },
                           style: OutlinedButton.styleFrom(
                               backgroundColor: green,
@@ -81,9 +86,10 @@ class Forgetpassword extends StatelessWidget {
                           child: const Text(
                             "Send Code",
                             style: TextStyle(
+                                fontFamily: "Poppins",
                                 fontSize: 19,
                                 color: white,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),

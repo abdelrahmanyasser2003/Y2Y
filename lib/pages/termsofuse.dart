@@ -14,29 +14,33 @@ class _TermsofuseState extends State<Termsofuse> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: cornflowerblue,
-      appBar: AppBar(
-          backgroundColor: cornflowerblue,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset("assets/img/White Logo Icon.png"),
-          )),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Padding(padding: EdgeInsets.only(top: 1)),
+            Image.asset(
+              "assets/img/ytylogo.png",
+              width: 150,
+              height: 150,
+            ),
             Container(
               margin: const EdgeInsets.only(left: 15),
               child: const Text(
                 "Terms of Use",
                 style: TextStyle(
-                    fontSize: 30, fontWeight: FontWeight.bold, color: white),
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: white,
+                  fontFamily: "Montserrat",
+                ),
               ),
             ),
             Center(
               child: Container(
                 margin: const EdgeInsets.only(top: 15),
                 width: 329,
-                height: 500,
+                height: 450,
                 decoration: BoxDecoration(
                     color: white, borderRadius: BorderRadius.circular(10)),
                 child: const SingleChildScrollView(
@@ -79,19 +83,24 @@ class _TermsofuseState extends State<Termsofuse> {
                   value: ischecked,
                   onChanged: (value) {
                     setState(() {
-                    ischecked = value!;
+                      ischecked = value!;
                     });
                   },
                   fillColor: const WidgetStatePropertyAll(white),
                   checkColor: cornflowerblue,
                 ),
                 const Text("i accept the terms of use\n and policy of privacy",
-                    style: TextStyle(fontSize: 12, color: white,fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 17,),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: white,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(
+                  width: 17,
+                ),
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(15),
                   child: SizedBox(
-                    width: 110,
+                    width: 116,
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
@@ -103,9 +112,12 @@ class _TermsofuseState extends State<Termsofuse> {
                             borderRadius: BorderRadius.circular(7))),
                       ),
                       child: const Text(
-                        "Submit",
+                        "Continue",
                         style: TextStyle(
-                          fontSize: 19,
+                                                                  fontWeight: FontWeight.w500,
+
+                          fontFamily: "Poppins",
+                          fontSize: 14,
                           color: white,
                         ),
                       ),

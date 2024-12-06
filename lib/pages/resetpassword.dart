@@ -12,7 +12,7 @@ class Resetpassword extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              const Padding(padding: EdgeInsets.only(top: 10)),
+              const Padding(padding: EdgeInsets.only(top: 1)),
             Image.asset(
               "assets/img/ytylogo.png",
               width:150,
@@ -38,6 +38,8 @@ class Resetpassword extends StatelessWidget {
                         "Reset Your Password",
                         style: TextStyle(
                           fontSize: 20,
+                            fontFamily: "Montserrat",
+
                           color: cornflowerblue,
                           fontWeight: FontWeight.bold,
                         ),
@@ -45,18 +47,42 @@ class Resetpassword extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                        TextField(
-                        keyboardType: TextInputType.text,
+                        TextFormField(
+                          cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,style: const TextStyle(color: Colors.black),
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          hintText: "Enter Your New Password ",
-                          hintStyle: const TextStyle(color: cornflowerblue, fontSize: 12),
+                          hintText: "Enter New Password ",
+                          hintStyle: const TextStyle(color: Colors.grey, fontSize: 12,fontFamily: "Lato"),
                           enabledBorder: OutlineInputBorder(
                             borderSide: Divider.createBorderSide(context),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: cornflowerblue,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(8),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                          cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,style: const TextStyle(color: Colors.black),
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          hintText: "Confirm New Password ",
+                          hintStyle: const TextStyle(color: Colors.grey, fontSize: 12,fontFamily: "Lato"),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: Divider.createBorderSide(context),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey,
                             ),
                           ),
                           filled: true,
@@ -67,6 +93,7 @@ class Resetpassword extends StatelessWidget {
                       const SizedBox(
                         height: 20,
                       ),
+
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -76,11 +103,14 @@ class Resetpassword extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8))),
                           child: const Text(
-                            "Submit",
+                            "Save Changes",
                             style: TextStyle(
                                 fontSize: 19,
                                 color: white,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w500,
+                                fontFamily: "Poppins"
+
+                                ),
                           ),
                         ),
                       ),
