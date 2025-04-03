@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ElvatedButtonWidget extends StatelessWidget {
-  ElvatedButtonWidget(
+  const ElvatedButtonWidget(
       {super.key,
+      this.fontSize,
       required this.text,
+      this.icon,
       required this.onPressed,
       required this.backgroundColor,
       required this.color});
   final String text;
+  final IconData? icon;
+
+  final double? fontSize;
   final void Function()? onPressed;
   final WidgetStateProperty<Color?>? backgroundColor;
   final Color? color;
@@ -27,7 +33,7 @@ class ElvatedButtonWidget extends StatelessWidget {
         text,
         style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 19,
+            fontSize: fontSize ?? 15.sp,
             color: color,
             fontFamily: "Poppins"),
       ),

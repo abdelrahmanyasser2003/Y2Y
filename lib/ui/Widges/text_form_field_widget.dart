@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:y2y/core/app_styles.dart';
 
 class TextFormFieldWidget extends StatelessWidget {
-  TextFormFieldWidget(
+  const TextFormFieldWidget(
       {super.key,
-      required this.controller,
-      required this.onChanged,
-      required this.hintText,
-      required this.validator,
-      required this.suffixIcon,
-      required this.obscureText,
-      required this.keyboardType,
-      required this.maxLength,
-      required this.maxLines,
-      required this.textInputAction});
+      this.width,
+      this.height,
+      this.colors,
+      this.controller,
+      this.onChanged,
+      this.hintText,
+      this.validator,
+      this.suffixIcon,
+      this.obscureText,
+      this.keyboardType,
+      this.maxLength,
+      this.maxLines,
+      this.textInputAction});
   final String? hintText;
+  final double? width;
+  final double? height;
+  final Color? colors;
   final void Function(String)? onChanged;
   final TextEditingController? controller;
   final Widget? suffixIcon;
@@ -23,41 +31,44 @@ class TextFormFieldWidget extends StatelessWidget {
   final int? maxLength;
   final int? maxLines;
 
-  String? Function(String?)? validator;
+  final String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      onChanged: onChanged,
-      controller: controller,
-      validator: validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      obscureText: obscureText ?? false,
-      cursorColor: Colors.black,
-      keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.black),
-      textInputAction: textInputAction,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(
-            fontFamily: "Lato", color: Colors.grey, fontSize: 12),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: Divider.createBorderSide(context),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: Colors.grey,
+    return SizedBox(
+      width: width,
+      height: height ?? 40.h,
+      child: TextFormField(
+        onChanged: onChanged,
+        controller: controller,
+        validator: validator,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        obscureText: obscureText ?? false,
+        cursorColor: Colors.black,
+        keyboardType: keyboardType,
+        style: TextStyle(color: colors?? Colors.black),
+        textInputAction: textInputAction,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: AppStyles().lato16w600style,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: Divider.createBorderSide(context),
           ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: Colors.grey,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.all(8.w),
+          suffixIcon: suffixIcon,
+          suffixIconColor: Colors.black,
         ),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.all(8),
-        suffixIcon: suffixIcon,
-        suffixIconColor: Colors.black,
+        maxLength: maxLength,
+        maxLines: obscureText == true ? 1 : maxLines,
       ),
-      maxLength: maxLength,
-      maxLines: obscureText == true ? 1 : maxLines,
     );
   }
 }

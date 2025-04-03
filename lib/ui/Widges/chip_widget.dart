@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:y2y/ui/widges/colors.dart';
+import 'package:y2y/core/app_colors.dart';
+
 
 class ChipWidgt extends StatelessWidget {
   ChipWidgt(
