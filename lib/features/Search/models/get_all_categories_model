@@ -1,0 +1,25 @@
+import 'category_model.dart';
+
+class GetAllCategories {
+  bool? success;
+  List<CategoryModel>? data;
+
+  GetAllCategories({
+    this.success,
+    this.data,
+  });
+
+  factory GetAllCategories.fromJson(Map<String, dynamic> json) => GetAllCategories(
+        success: json["success"],
+        data: json["data"] == null
+            ? []
+            : List<CategoryModel>.from(json["data"].map((x) => CategoryModel.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "success": success,
+        "data": data == null
+            ? []
+            : List<dynamic>.from(data!.map((x) => x.toJson())),
+      };
+}

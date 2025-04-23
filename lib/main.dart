@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:y2y/provider/auth_provider/login_provider.dart';
-import 'package:y2y/provider/auth_provider/verify_email_provider.dart';
-import 'package:y2y/provider/community_provider.dart';
-import 'package:y2y/provider/edit_profile_provider.dart';
-import 'package:y2y/provider/messages_provider.dart';
-import 'package:y2y/provider/new_opportunity_provider.dart';
-import 'package:y2y/provider/notfications_provider.dart';
-import 'package:y2y/provider/profile_provider.dart';
-import 'package:y2y/provider/user_chat_provider.dart';
-import 'package:y2y/provider/user_details_provider.dart';
-import 'package:y2y/ui/Screens/Authentication_Screens/sign_up_screen.dart';
-
+import 'package:y2y/core/networking/dio_helper.dart';
+import 'package:y2y/features/Authentication/provider/verify_email_provider.dart';
+import 'package:y2y/features/Bottom%20Navigation%20Bar/provider/messages_provider.dart';
+import 'package:y2y/features/Bottom%20Navigation%20Bar/provider/notfications_provider.dart';
+import 'package:y2y/features/Communities/provider/community_provider.dart';
+import 'package:y2y/features/Communities/provider/get_all_communities_provider.dart';
+import 'package:y2y/features/Opening%20Screens/Screens/weloming_screen.dart';
+import 'package:y2y/features/Opportunities/provider/get_all_opportunities_provider.dart';
+import 'package:y2y/features/Opportunities/provider/get_all_reacts_provider.dart';
+import 'package:y2y/features/Opportunities/provider/make_react_provider.dart';
+import 'package:y2y/features/Opportunities/provider/new_opportunity_provider.dart';
+import 'package:y2y/features/Profile%20Setup/Screens/communitys_suggsestion_screen.dart';
+import 'package:y2y/features/Search/provider/get_all_categoris_provider.dart';
+import 'package:y2y/features/Search/provider/get_all_subcategories_provider.dart';
+import 'package:y2y/features/Search/provider/search_provider.dart';
+import 'package:y2y/features/user/provider/edit_profile_provider.dart';
+import 'package:y2y/features/user/provider/profile_provider.dart';
+import 'package:y2y/features/user/provider/user_chat_provider.dart';
+import 'package:y2y/features/user/provider/user_details_provider.dart';
 
 void main() {
+  DioHelper.initDio();
+
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (ctx) => NewOpportunityProvider()),
     ChangeNotifierProvider(create: (ctx) => NotficationsProvider()),
@@ -24,8 +33,14 @@ void main() {
     ChangeNotifierProvider(create: (ctx) => CommunityProvider()),
     ChangeNotifierProvider(create: (ctx) => UserChatProvider()),
     ChangeNotifierProvider(create: (ctx) => ProfileProvider()),
-    ChangeNotifierProvider(create: (ctx) => LoginProvider()),
     ChangeNotifierProvider(create: (ctx) => EditProfileProvider()),
+    ChangeNotifierProvider(create: (ctx) => SearchProvider()),
+    ChangeNotifierProvider(create: (ctx) => GetAllCategoriesProvider()),
+    ChangeNotifierProvider(create: (ctx) => GetAllSubcategoriesProvider()),
+    ChangeNotifierProvider(create: (ctx) => GetAllOpportunitiesProvider()),
+    ChangeNotifierProvider(create: (ctx) => GetAllReactsProvider()),
+    ChangeNotifierProvider(create: (ctx) => MakeReactProvider()),
+    ChangeNotifierProvider(create: (ctx) => CommunitiesProvider()),
   ], child: MyApp()));
 }
 
@@ -41,7 +56,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: SignupPage(),
+          home: Communitysuggsestion(),
         );
       },
     );
