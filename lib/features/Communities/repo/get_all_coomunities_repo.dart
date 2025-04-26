@@ -20,9 +20,11 @@ class GetAllCommunitiesRepo {
       );
 
       print('📥 Response Data: ${response.data}');
-      final allCommunities = (response.data as List)
+
+      final allCommunities = (response.data['data'] as List)
           .map((e) => CommunitiesModell.fromJson(e))
           .toList();
+
       return allCommunities;
     } catch (e) {
       print('❌ Error fetching communities: $e');

@@ -118,7 +118,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                           categoryId: category.id ?? "",
                                         )));
                           },
-                          child: ListTileWidget(title: category.name ?? ''),
+                          child: ListTileWidget(
+                            title: category.name ?? '',
+                            subTitle: category.desc ?? '',
+                          ),
                         );
                       },
                     )

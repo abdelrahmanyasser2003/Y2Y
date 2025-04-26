@@ -18,6 +18,7 @@ class GetAllSubcategoriesProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // استدعاء خدمة الـ Repo لجلب البيانات
       _subcategories = await _service.getSubcategories(categoryId);
     } catch (e) {
       _hasError = true;

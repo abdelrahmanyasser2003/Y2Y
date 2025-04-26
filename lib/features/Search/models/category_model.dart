@@ -2,6 +2,7 @@ class CategoryModel {
   String? id;
   String? name;
   String? slug;
+  String? desc;
   String? image;
   String? createdBy;
   String? updatedBy;
@@ -12,6 +13,7 @@ class CategoryModel {
   CategoryModel({
     this.id,
     this.name,
+    this.desc,
     this.slug,
     this.image,
     this.createdBy,
@@ -26,16 +28,22 @@ class CategoryModel {
         name: json["name"],
         slug: json["slug"],
         image: json["image"],
+        desc: json['desc'],
         createdBy: json["createdBy"],
         updatedBy: json["updatedBy"],
-        createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
-        updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.parse(json["createdAt"]),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
         "name": name,
+        'desc': desc,
         "slug": slug,
         "image": image,
         "createdBy": createdBy,

@@ -19,8 +19,9 @@ class UserDetailsRepo {
       );
 
       if (response.statusCode == 200) {
-        final data = response.data['data']; // تأكد من أنك تأخذ البيانات من الـ "data"
-        
+        final data =
+            response.data['data']; // تأكد من أنك تأخذ البيانات من الـ "data"
+
         // تحويل البيانات إلى نموذج UserDetailsModel
         return UserDetailsModel.fromJson(data);
       } else {

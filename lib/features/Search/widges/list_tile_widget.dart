@@ -3,9 +3,9 @@ import 'package:y2y/core/styling/app_colors.dart';
 
 class ListTileWidget extends StatelessWidget {
   const ListTileWidget(
-      {super.key, required this.title});
+      {super.key, required this.title,this.subTitle});
   final String title;
-  // final String subTitle;
+  final String? subTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +26,14 @@ class ListTileWidget extends StatelessWidget {
               fontFamily: 'Montserrat',
               fontWeight: FontWeight.w700),
         ),
-        // subtitle: Text(
-        //   subTitle,
-        //   style: TextStyle(
-        //       color: cornflowerblue,
-        //       fontSize: 10,
-        //       fontFamily: 'Montserrat',
-        //       fontWeight: FontWeight.w400),
-        // ),
+        subtitle: Text(
+          subTitle??'',
+          style: TextStyle(
+              color: cornflowerblue,
+              fontSize: 9,
+              fontFamily: 'Montserrat',
+              fontWeight: FontWeight.w100),
+        ),
       ),
     );
   }

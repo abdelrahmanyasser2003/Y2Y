@@ -75,11 +75,12 @@ class DioHelper {
 
   putRequest({
     required String endPoint,
-    required Map<String, dynamic> data,
+    Map<String, dynamic>? data,
     Options? options,
   }) async {
     try {
-      final Response response = await dio!.put(endPoint, data: data);
+      final Response response =
+          await dio!.put(endPoint, data: data, options: options);
 
       return response;
     } catch (e) {

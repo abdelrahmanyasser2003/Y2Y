@@ -4,8 +4,8 @@ import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
+import 'package:y2y/features/Search/Screens/search_communtiy.dart';
 import 'package:y2y/features/Search/provider/get_all_subcategories_provider.dart';
-import 'package:y2y/features/Search/widges/list_tile_widget.dart';
 
 class SearchResult extends StatefulWidget {
   const SearchResult({
@@ -45,10 +45,10 @@ class _SearchResultState extends State<SearchResult> {
 
     return SafeArea(
       child: Scaffold(
-          appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: AppBarWidget(),
-      ),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: AppBarWidget(),
+        ),
         backgroundColor: cornflowerblue,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -149,9 +149,52 @@ class _SearchResultState extends State<SearchResult> {
 
                                   return GestureDetector(
                                     onTap: () {
-                                      // ممكن تروح لتفاصيل السب كاتيجوري هنا
+                                      // التحقق إذا كانت القيمة موجودة أو لا
+                                      final subcategoryId = item['_id'] ??
+                                          ''; // استخدم قيمة افتراضية إذا كانت null
+
+                                      // إذا كانت القيمة فارغة أو null، يمكن إظهار رسالة خطأ أو التعامل معها بشكل آخر
+                                      if (subcategoryId.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content:
+                                                  Text('فشل في تحميل الـ ID')),
+                                        );
+                                        return;
+                                      }
+
+                                      // تمرير subcategoryId إلى شاشة SearchCommuntiy
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SearchCommuntiy(
+                                              subcategoryname: name,
+                                              subcategoryId: subcategoryId),
+                                        ),
+                                      );
                                     },
-                                    child: ListTileWidget(title: name),
+                                    child: Container(
+                                      margin: EdgeInsets.only(bottom: 10),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: white),
+                                      child: ListTile(
+                                        trailing: Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: cornflowerblue,
+                                        ),
+                                        title: Text(
+                                          name,
+                                          style: TextStyle(
+                                              color: cornflowerblue,
+                                              fontSize: 15,
+                                              fontFamily: 'Montserrat',
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                    ),
                                   );
                                 },
                               ),

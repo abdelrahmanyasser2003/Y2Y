@@ -7,9 +7,9 @@ class ChipWidgt extends StatelessWidget {
       required this.value,
       required this.onSelected,
       required this.text,
-      required this.selected});
+       this.selected});
   final bool? value;
-  final bool selected;
+  final bool? selected;
   final String text;
   final void Function(bool)? onSelected;
 
@@ -25,7 +25,7 @@ class ChipWidgt extends StatelessWidget {
       ),
       onSelected: onSelected,
       checkmarkColor: white,
-      selected: selected,
+      selected: selected??false,
       label: Text(
         text,
         style: TextStyle(

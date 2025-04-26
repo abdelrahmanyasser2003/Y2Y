@@ -1,545 +1,605 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
+import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
-import 'package:y2y/features/user/screens/user_details_screen.dart';
+import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/provider/join_community_provider.dart';
+import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
+import 'package:y2y/features/Communities/repo/join_community_repo.dart';
+import 'package:y2y/features/user/models/user_detils_model.dart';
+import 'package:y2y/features/user/repo/user_repo2.dart';
 
+class CommunityDetails extends StatefulWidget {
+  final CommunitiesModell community;
 
-
-
-
-
-class Communitysdeitals extends StatefulWidget {
-  const Communitysdeitals({super.key, required community});
+  const CommunityDetails({super.key, required this.community});
 
   @override
-  State<Communitysdeitals> createState() => _CommunitysdeitalsState();
+  State<CommunityDetails> createState() => _CommunityDetailsState();
 }
 
-class _CommunitysdeitalsState extends State<Communitysdeitals> {
+class _CommunityDetailsState extends State<CommunityDetails> {
+  late Future<UserDetailsModel> _userDetailsFuture;
+  bool hasRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userDetailsFuture =
+        UserDetailsRepo().getUserDetails(); // استرجاع تفاصيل المستخدم من API
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-          appBar: PreferredSize(preferredSize: Size.fromHeight(kToolbarHeight), child: AppBarWidget()),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 11, vertical: 10),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage("assets/img/ai.jpg"),
-                    radius: 40,
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Column(
+        backgroundColor: white,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: AppBarWidget(),
+        ),
+        body: Consumer<JoinCommunityProvider>(
+          builder: (context, provider, child) {
+            return FutureBuilder<UserDetailsModel>(
+              future:
+                  _userDetailsFuture, // التأكد من تعريف الـ future بشكل صحيح
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(), // عرض مؤشر تحميل
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("فشل في تحميل البيانات: ${snapshot.error}"),
+                  );
+                } else if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 11, vertical: 10),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Tech Innovators",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: cornflowerblue,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: "Montserrat"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: (widget
+                                          .community.image?.isNotEmpty ??
+                                      false)
+                                  ? NetworkImage(
+                                      '${ApiEndpoints.baseUrl}${widget.community.image?.replaceAll("\\", "/")}')
+                                  : AssetImage(
+                                          'assets/images/default_community.png')
+                                      as ImageProvider,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.community.name ?? '',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: cornflowerblue,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: "Montserrat",
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    widget.community.desc ?? '',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: cornflowerblue,
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: "Roboto",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Icon(
+                                Icons.cancel_outlined,
+                                size: 30,
+                                color: cornflowerblue,
+                              ),
+                            ),
+                          ],
                         ),
+                        hieghtspace(hieght: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Category:",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              width: 80,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: white),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: cornflowerblue),
+                              child: Text(
+                                widget.community.category!.name ?? 'Unknown',
+                                style: const TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "Subcategory:",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              width: 80,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: white),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: cornflowerblue),
+                              child: Text(
+                                widget.community.subcategory!.name ?? 'Unknown',
+                                style: const TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        hieghtspace(hieght: 10),
+                        Row(
+                          children: [
+                            Text(
+                              "Members:",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                            Widthspace(width: 55),
+                            Text(
+                              widget.community.numberOfMembers?.toString() ??
+                                  '0',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                            Widthspace(width: 60),
+                            Text(
+                              "Location:",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                            Widthspace(width: 65),
+                            Text(
+                              widget.community.location!.state ?? 'Unknown',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: cornflowerblue,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: "Roboto",
+                              ),
+                            ),
+                          ],
+                        ),
+                        hieghtspace(hieght: 10),
+                        Divider(
+                          color: purple,
+                          thickness: 0.5,
+                        ),
+                        hieghtspace(hieght: 10),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Volunteer (Admin) :",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                                hieghtspace(hieght: 15),
+                                Text(
+                                  "Start Date :",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                                hieghtspace(hieght: 5),
+                                Text(
+                                  DateFormat('E dd/MM/yyyy').format(
+                                      DateTime.parse(widget
+                                          .community.date!.startDate!
+                                          .toString())),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Widthspace(width: 45),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.community.volunteer ?? "",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                                hieghtspace(hieght: 15),
+                                Text(
+                                  "End Date :",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                                hieghtspace(hieght: 5),
+                                Text(
+                                  DateFormat('E dd/MM/yyyy').format(
+                                      DateTime.parse(widget
+                                          .community.date!.endDate!
+                                          .toString())),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: cornflowerblue,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Roboto",
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        hieghtspace(hieght: 10),
+                        Divider(
+                          color: purple,
+                          thickness: 0.5,
+                        ),
+                        hieghtspace(hieght: 10),
+                        Text(
+                          "Meeting Schedule :",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: cornflowerblue,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: "Roboto",
+                          ),
+                        ),
+                        hieghtspace(hieght: 10),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    hieghtspace(hieght: 5),
+                                    Text(
+                                      widget.community.date?.schedule?.first ??
+                                          '',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Text(
+                                      ' at',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat(' h:mm a').format(
+                                        DateTime.parse(widget
+                                                .community.date?.startAt
+                                                .toString() ??
+                                            ''),
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                hieghtspace(hieght: 5),
+                                Row(
+                                  children: [
+                                    hieghtspace(hieght: 5),
+                                    Text(
+                                      widget.community.date?.schedule?.last ??
+                                          '',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Text(
+                                      ' at',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat(' h:mm a').format(
+                                        DateTime.parse(widget
+                                                .community.date?.finishAt
+                                                .toString() ??
+                                            ''),
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Widthspace(width: 30),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Location:",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Widthspace(width: 3),
+                                    Text(
+                                      widget.community.location?.city ?? '',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                hieghtspace(hieght: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Location:",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                    Widthspace(width: 3),
+                                    Text(
+                                      widget.community.location?.city ?? '',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Roboto",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        hieghtspace(hieght: 10),
+                        Divider(
+                          color: purple,
+                          thickness: 0.5,
+                        ),
+                        hieghtspace(hieght: 10),
+                        Text(
+                          "Community Roles :",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: cornflowerblue,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: "Roboto",
+                          ),
+                        ),
+                        hieghtspace(hieght: 5),
+                        Text(
+                          widget.community.roles ?? '',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: cornflowerblue,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: "Roboto",
+                          ),
+                        ),
+                        hieghtspace(hieght: 90),
                         SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          "Stay updated on tech trands and AI\ndevelopments",
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: cornflowerblue,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: "Roboto"),
-                        ),
-                      ]),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.arrow_forward_outlined,
-                        color: cornflowerblue,
-                      )),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Category :",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Chip(
-                    side: BorderSide(color: white),
-                    padding: EdgeInsets.all(0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                    label: Text(
-                      "Tech",
-                      style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontWeight: FontWeight.w800,
-                      ),
+                            width: double.infinity,
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                // تحقق من أن widget.community ليس null
+                                if (widget.community.id == null) {
+                                  showAnimatedSnackDialog(
+                                    context,
+                                    type: AnimatedSnackBarType.error,
+                                    message:
+                                        "Community data is missing or invalid.",
+                                  );
+                                  return;
+                                }
+
+                                if (hasRequested) {
+                                  // عرض SnackBar لتأكيد الإلغاء مباشرة
+                                  final shouldCancel = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      backgroundColor: cornflowerblue,
+                                      title: Text(
+                                        'Are you sure you want to cancel the request?',
+                                        style: TextStyle(
+                                            color: white,
+                                            fontFamily: 'Roboto',
+                                            fontSize: 19),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: Text('NO',
+                                              style: TextStyle(
+                                                  color: white,
+                                                  fontFamily: 'Roboto')),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: Text('YES',
+                                              style: TextStyle(
+                                                  color: white,
+                                                  fontFamily: 'Roboto')),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+
+                                  if (shouldCancel == true) {
+                                    // إلغاء الطلب عبر الـ API
+                                    await CancelJoinRepo().cancelJoinRequest(
+                                      widget.community.id?.toString() ??
+                                          '', // التأكد أن id ليس null
+                                      context,
+                                    );
+
+                                    setState(() {
+                                      hasRequested =
+                                          false; // إعادة تعيين حالة الطلب
+                                    });
+                                  }
+                                } else {
+                                  // تحقق من provider.isLoading قبل استخدامه
+                                  await JoinCommunityRepo()
+                                      .sendRequestToCommunity(
+                                    widget.community.id?.toString() ??
+                                        '', // التأكد أن id ليس null
+                                    context,
+                                  );
+
+                                  setState(() {
+                                    hasRequested =
+                                        true; // تغيير حالة الزر بعد الطلب
+                                  });
+                                }
+                              },
+                              style: ButtonStyle(
+                                elevation: WidgetStatePropertyAll(5),
+                                shadowColor:
+                                    WidgetStatePropertyAll(Colors.black),
+                                backgroundColor:
+                                    WidgetStatePropertyAll(cornflowerblue),
+                                shape: WidgetStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                side: WidgetStatePropertyAll(
+                                    BorderSide(color: cornflowerblue)),
+                              ),
+                              child: provider.isLoading == true
+                                  ? CircularProgressIndicator() // عرض الـ loading أثناء الإرسال
+                                  : Text(
+                                      hasRequested
+                                          ? 'Cancel Request'
+                                          : 'Request',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontFamily: "Poppins",
+                                      ),
+                                    ),
+                            ))
+                      ],
                     ),
-                    labelStyle: TextStyle(color: white),
-                    color: WidgetStatePropertyAll(cornflowerblue),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Sub Category :",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Chip(
-                    side: BorderSide(color: white),
-                    padding: EdgeInsets.all(0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                    label: Text(
-                      "AI",
-                      style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    labelStyle: TextStyle(color: white),
-                    color: WidgetStatePropertyAll(cornflowerblue),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Members:",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    width: 40,
-                  ),
-                  Text(
-                    "1,293",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    width: 33,
-                  ),
-                  Text(
-                    "Location :",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    width: 48,
-                  ),
-                  Text(
-                    "Alexandria",
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: "Roboto"),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Divider(
-                color: purple,
-                thickness: 0.8,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Volunteer (Admin) :",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: "Roboto"),
-                          ),
-                          SizedBox(
-                            width: 70,
-                          ),
-                          Text(
-                            "Ahmed Saad",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: "Roboto"),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Start Date :",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: "Roboto"),
-                          ),
-                          SizedBox(
-                            width: 122,
-                          ),
-                          Text(
-                            "End Date :",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: "Roboto"),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Sun 03/08/2025",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: "Roboto"),
-                          ),
-                          SizedBox(
-                            width: 90,
-                          ),
-                          Text(
-                            "Tue 14/08/2025",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: "Roboto"),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: purple,
-                thickness: 0.8,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Meeting Schedule :",
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Monday at 3:30 pm",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 35,
-                      ),
-                      Text(
-                        "Location:",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "Star Workspace",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Wednesday at 5:00 pm",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(
-                        "Location:",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "CAFE CLUB",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "Saturday at 8:00 pm",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 30,
-                      ),
-                      Text(
-                        "Location:",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        "City Walk",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: cornflowerblue,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: "Roboto"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: purple,
-                thickness: 0.8,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Community Roles :",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: cornflowerblue,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Roboto"),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                "1.  Respectful Communication: Always communicate with\n     kindness and respect.\n2.  Privacy and Confidentiality: Respect the privacy of other\n     members\n3.  Positive Environment: Contribute to a positive and\n     supportive community atmosphere.\n4.  Constructive Feedback: Provide feedback in a\n     constructive and helpful manner.",
-                style: TextStyle(
-                    fontSize: 11,
-                    color: cornflowerblue,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Roboto"),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: purple,
-                thickness: 0.8,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Members :",
-                    style: TextStyle(
-                        fontSize: 24,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "View all >",
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: cornflowerblue,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: "Montserrat"),
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Userdetils()));
-                },
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage("assets/img/pic1.jpg"),
-                    radius: 40,
-                  ),
-                  title: Text(
-                    "Ahmed Saad",
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: "Roboto"),
-                  ),
-                  subtitle: Text(
-                    "Volunteer (Admin)",
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: cornflowerblue,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: "Roboto"),
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage("assets/img/pic2.jpg"),
-                  radius: 40,
-                ),
-                title: Text(
-                  "Fady Adel",
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: cornflowerblue,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: "Roboto"),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage("assets/img/pic3.jpg"),
-                  radius: 40,
-                ),
-                title: Text(
-                  "Salma Hany",
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: cornflowerblue,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: "Roboto"),
-                ),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Userdetils()));
-                },
-              ),
-            ]),
-          ),
+                  );
+                } else {
+                  return Center(child: Text("لا توجد بيانات لعرضها"));
+                }
+              },
+            );
+          },
         ));
   }
 }
