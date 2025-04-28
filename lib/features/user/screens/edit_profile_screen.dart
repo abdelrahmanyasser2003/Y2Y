@@ -1,25 +1,25 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/styling/app_styles.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/user/provider/edit_profile_provider.dart';
+import 'package:y2y/features/user/provider/get_user_provider.dart';
+import 'package:y2y/features/user/provider/update_user_provider.dart';
 import 'package:y2y/features/user/widges/elvated_button__profile_widget.dart';
-
 
 class EditProfileScreen extends StatefulWidget {
   final String education;
   final String skill;
-  final Uint8List imgpath;
+  final String imgpath;
   final String name;
   final String subname;
-  final String email;
-  final String phone;
   final String bio;
   final String gender;
   final String dateOfBirth;
@@ -35,8 +35,6 @@ class EditProfileScreen extends StatefulWidget {
     required this.imgpath,
     required this.name,
     required this.subname,
-    required this.email,
-    required this.phone,
     required this.gender,
     required this.dateOfBirth,
     required this.city,
@@ -52,8 +50,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Text Controllers
   late TextEditingController nameController;
   late TextEditingController subnameController;
-  late TextEditingController emailController;
-  late TextEditingController phoneController;
   late TextEditingController genderController;
   late TextEditingController dateController;
   late TextEditingController stateController;
@@ -97,18 +93,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String dropdwonvalue = "Gender";
   final List<String> _dropdowngender = ["Gender", "Male", "Femele"];
 
-  Uint8List? imgPath;
+  String? imgPath;
   bool isEditing = false;
   bool isEditing1 = false;
 
   @override
   void initState() {
     super.initState();
+    imgPath = widget.imgpath; // تحميل الصورة المحفوظة في البروفايل
+
     // Initialize controllers with the existing user data
     nameController = TextEditingController(text: widget.name);
     subnameController = TextEditingController(text: widget.subname);
-    emailController = TextEditingController(text: widget.email);
-    phoneController = TextEditingController(text: widget.phone);
     genderController = TextEditingController(text: widget.gender);
     dateController = TextEditingController(text: widget.dateOfBirth);
     stateController = TextEditingController(text: widget.state);
@@ -122,8 +118,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
     genderController.dispose();
     dateController.dispose();
     stateController.dispose();
@@ -152,17 +146,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> uploadImage(ImageSource source) async {
     final XFile? pickedImg = await ImagePicker().pickImage(source: source);
     if (pickedImg != null) {
-      Uint8List bytes = await pickedImg.readAsBytes();
+      // في هذه الحالة سنقوم بتخزين المسار أو الرابط للصورة بدلاً من البايتات
+      String imagePath = pickedImg.path; // الحصول على مسار الصورة
       setState(() {
-        imgPath = bytes;
+        imgPath = imagePath; // تخزين المسار في imgPath
       });
-      Navigator.pop(context); // Close the modal after picking the image
+      Navigator.pop(context); // إغلاق المودال بعد اختيار الصورة
     }
-  }
-
-  void initStatee() {
-    super.initState();
-    imgPath = widget.imgpath; // تحميل الصورة المحفوظة في البروفايل
   }
 
   void showImagePicker() {
@@ -195,6 +185,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<GetUserProvider>(context);
     return Scaffold(
       backgroundColor: cornflowerblue,
       appBar: PreferredSize(
@@ -211,19 +202,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Stack(
                   children: [
                     CircleAvatar(
-                      backgroundColor: white,
+                      backgroundColor: Colors.white,
                       radius: 50.w,
-                      backgroundImage: (imgPath != null)
-                          ? MemoryImage(
-                              imgPath!) // الصورة الجديدة التي اختارها المستخدم
-                          : (widget.imgpath.isNotEmpty
-                              ? MemoryImage(
-                                  widget.imgpath) // الصورة القادمة من البروفايل
-                              : null), // لا تعرض أي صورة إذا لم تكن هناك بيانات
-                      child: (widget.imgpath.isEmpty && imgPath == null)
-                          ? Icon(Icons.person,
-                              size: 50, color: Colors.grey) // صورة افتراضية
-                          : null,
+                      backgroundImage: imgPath != null
+                          ? (imgPath!.startsWith('http') ||
+                                  imgPath!.startsWith('/uploads')
+                              ? NetworkImage(
+                                  '${ApiEndpoints.baseUrl}$imgPath') // صورة من النت
+                              : FileImage(File(imgPath!))
+                                  as ImageProvider) // صورة من الجهاز
+                          : AssetImage('assets/img/pic1.jpg')
+                              as ImageProvider, // صورة افتراضية
                     ),
                     Positioned(
                       left: 26.r,
@@ -371,39 +360,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             hieghtspace(hieght: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Email", style: AppStyles().monwhite16w600style),
-                    hieghtspace(hieght: 5),
-                    TextFormFieldWidget(
-                      colors: cornflowerblue,
-                      controller: emailController,
-                      width: 175.w,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Phone Number",
-                        style: AppStyles().monwhite16w600style),
-                    hieghtspace(hieght: 5),
-                    TextFormFieldWidget(
-                      colors: cornflowerblue,
-                      controller: phoneController,
-                      width: 155.w,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            hieghtspace(hieght: 10),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -561,6 +517,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ElvatedButtonPrfileWidget(
               onPressed: () {
                 Navigator.pop(context);
+                final provider =
+                    Provider.of<UpdateUserProvider>(context, listen: false);
+
+                provider.updateUser(
+                  firstName: nameController.text,
+                  lastName: nameController.text,
+                  email: userProvider.user?.email ?? '',
+                  address: {
+                    "street": streetController.text,
+                    "city": cityController.text,
+                    "state": stateController.text,
+                  },
+                  phone: userProvider.user!.phone.toString(),
+                  bD: dateController.text,
+                  bio: bioController.text,
+                  gender: dropdwonvalue,
+                  userName: subnameController.text,
+                  interested: userProvider.user?.interested ?? [],
+                );
 
                 Provider.of<EditProfileProvider>(context, listen: false)
                     .updateProfile(
@@ -571,12 +546,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         newSkill: skillController.text,
                         newEducation: educationController.text,
                         newDateOfBirth: dateController.text,
-                        newEmail: emailController.text,
-                        newPhone: phoneController.text,
                         newGender: genderController.text,
                         newStreet: streetController.text,
                         newState: selectedState,
-                        newImgpath: imgPath ?? widget.imgpath);
+                        newImgpath: imgPath ?? '');
               },
               text: 'Save Changes',
               color: white,

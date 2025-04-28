@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +9,6 @@ import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Profile%20Setup/Screens/interest_selection_screen.dart';
 import 'package:y2y/features/user/provider/edit_profile_provider.dart';
-
 
 class Profilepicabout extends StatefulWidget {
   const Profilepicabout({super.key});
@@ -41,14 +41,15 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
     }
   }
 
-  Uint8List? imgPath;
+  String? imgPath;
 
   Future<void> uploadImage2Screen(ImageSource source) async {
     final XFile? pickedImg = await ImagePicker().pickImage(source: source);
     if (pickedImg != null) {
       Uint8List bytes = await pickedImg.readAsBytes();
+      String base64String = base64Encode(bytes); // تحويل الصورة إلى Base64
       setState(() {
-        imgPath = bytes;
+        imgPath = base64String; // تخزين الصورة كـ String
       });
     }
   }
@@ -130,7 +131,7 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
           )),
       body: SingleChildScrollView(
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
           child: Form(
             key: _formKey,
             child: Column(
@@ -165,18 +166,27 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                     children: [
                       imgPath == null
                           ? CircleAvatar(
-                              backgroundColor: white,
-                              radius: 71.r,
+                              backgroundColor: Colors.white,
+                              radius: 71,
                             )
-                          : CircleAvatar(
-                              radius: 71.r,
-                              backgroundImage: MemoryImage(imgPath!),
-                            ),
+                          : imgPath!
+                                  .contains("http") // إذا كانت الصورة رابط URL
+                              ? CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      NetworkImage(imgPath!), // صورة من الرابط
+                                )
+                              : CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: MemoryImage(base64Decode(
+                                      imgPath!)), // تحويل Base64 إلى Uint8List
+                                ),
                       Positioned(
-                        left: 48.r,
-                        bottom: 48.r,
+                        left: 48,
+                        bottom: 48,
                         child: IconButton(
                           onPressed: () {
+                            // هنا يمكنك إضافة كود لاختيار الصورة من المعرض أو الكاميرا
                             showmodel();
                           },
                           icon: const Icon(
@@ -215,7 +225,6 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                   height: MediaQuery.of(context).size.height / 75,
                 ),
                 TextFormFieldWidget(
-                  
                   hintText: "@johnduo",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -255,8 +264,10 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     hintText: "DD/MM/YYYY",
-                    hintStyle:  TextStyle(
-                        color: Colors.grey, fontSize: 12.sp, fontFamily: "Lato"),
+                    hintStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12.sp,
+                        fontFamily: "Lato"),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: Divider.createBorderSide(context),
@@ -324,13 +335,14 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                     height: 290.h,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                        color: white, borderRadius: BorderRadius.circular(10.r)),
+                        color: white,
+                        borderRadius: BorderRadius.circular(10.r)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           Text(
+                          Text(
                             "Tell us about yourself",
                             style: TextStyle(
                                 fontFamily: "Montserrat",
@@ -379,7 +391,7 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                                 newEducation: educationController.text,
                                 newSkill: skillController.text,
                                 newDateOfBirth: dateController.text,
-                                newImgpath: imgPath ?? Uint8List(8));
+                                newImgpath: imgPath ?? '');
                         Navigator.push(
                             context,
                             MaterialPageRoute(

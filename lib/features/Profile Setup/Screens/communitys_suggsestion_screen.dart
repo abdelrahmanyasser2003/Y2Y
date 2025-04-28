@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/Screens/home_screen.dart';
-import 'package:y2y/features/Communities/provider/community_provider.dart';
-
-
+import 'package:y2y/features/Communities/Screens/communitys_details_screen.dart';
+import 'package:y2y/features/Communities/provider/get_all_communities_provider.dart';
 
 class Communitysuggsestion extends StatefulWidget {
   const Communitysuggsestion({super.key});
@@ -21,32 +21,20 @@ class _CommunitysuggsestionState extends State<Communitysuggsestion> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final communityProvider =
-          Provider.of<CommunityProvider>(context, listen: false);
-
-      if (communityProvider.availableCommunities.isNotEmpty) {
-        setState(() {
-          isJoinedList = List.generate(
-              communityProvider.availableCommunities.length, (index) => false);
-        });
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Provider.of<CommunitiesProvider>(context, listen: false)
+          .fetchCommunities();
+      final communities =
+          Provider.of<CommunitiesProvider>(context, listen: false).communities;
+      setState(() {
+        isJoinedList = List<bool>.filled(communities.length, false);
+      });
     });
   }
 
   void toggleJoin(int index) {
-    final communityProvider =
-        Provider.of<CommunityProvider>(context, listen: false);
-    final community = communityProvider.availableCommunities[index];
-
     setState(() {
       isJoinedList[index] = !isJoinedList[index];
-
-      if (isJoinedList[index]) {
-        communityProvider.joinCommunity(community);
-      } else {
-        communityProvider.leaveCommunity(community);
-      }
 
       if (isJoinedList.contains(true)) {
         buttontext = "Go to My Communities";
@@ -58,21 +46,22 @@ class _CommunitysuggsestionState extends State<Communitysuggsestion> {
 
   @override
   Widget build(BuildContext context) {
-    final communitiy =
-        Provider.of<CommunityProvider>(context).availableCommunities;
+    final communitiesProvider = Provider.of<CommunitiesProvider>(context);
+    final communitiy = communitiesProvider.communities;
 
     return Scaffold(
       backgroundColor: cornflowerblue,
       appBar: AppBar(
-          backgroundColor: cornflowerblue,
-          leading: Padding(
-            padding: const EdgeInsets.all(5),
-            child: Image.asset(
-              "assets/img/White Logo Icon.png",
-              width: 80,
-              height: 80,
-            ),
-          )),
+        backgroundColor: cornflowerblue,
+        leading: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Image.asset(
+            "assets/img/White Logo Icon.png",
+            width: 80,
+            height: 80,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -98,125 +87,146 @@ class _CommunitysuggsestionState extends State<Communitysuggsestion> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: communitiy.length,
-                itemBuilder: (context, index) {
-                  if (isJoinedList.isEmpty || index >= isJoinedList.length) {
-                    return const SizedBox();
-                  }
-                  final communities = communitiy[index];
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    margin: const EdgeInsets.only(bottom: 15),
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(communities.imagepath),
-                          radius: 40,
-                        ),
-                        const SizedBox(width: 7),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              communities.title,
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  color: cornflowerblue,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: "Montserrat"),
-                            ),
-                            const SizedBox(height: 2),
-                            SizedBox(
-                              width: 210,
-                              child: Text(
-                                communities.subtitle,
-                                style: const TextStyle(
-                                    fontSize: 11,
-                                    color: cornflowerblue,
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: "Roboto"),
+              child: communitiesProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: communitiy.length,
+                      itemBuilder: (context, index) {
+                        if (isJoinedList.isEmpty ||
+                            index >= isJoinedList.length) {
+                          return const SizedBox();
+                        }
+                        final community = communitiy[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CommunityDetails(
+                                  community: community,
+                                ),
                               ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            margin: const EdgeInsets.only(bottom: 15),
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: white,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            SizedBox(
-                              width: 200,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Chip(
-                                    side: const BorderSide(color: white),
-                                    padding: const EdgeInsets.all(0),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    label: Text(
-                                      communities.chip,
-                                      style: const TextStyle(
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.w800,
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    '${ApiEndpoints.baseUrl}${community.image?.replaceAll('\\', '/') ?? ''}',
+                                  ),
+                                  radius: 40,
+                                ),
+                                const SizedBox(width: 7),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        community.name ?? 'No Name',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: cornflowerblue,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Montserrat",
+                                        ),
                                       ),
-                                    ),
-                                    labelStyle: const TextStyle(color: white),
-                                    backgroundColor: cornflowerblue,
-                                  ),
-                                  SizedBox(
-                                    width: 80,
-                                    height: 25,
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor: isJoinedList[index]
-                                                ? green
-                                                : white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5)),
-                                            side:
-                                                const BorderSide(color: green)),
-                                        onPressed: () => toggleJoin(index),
+                                      const SizedBox(height: 2),
+                                      SizedBox(
+                                        width: double.infinity,
                                         child: Text(
-                                          isJoinedList[index]
-                                              ? "Joined"
-                                              : "Join",
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              color: isJoinedList[index]
-                                                  ? white
-                                                  : green,
-                                              fontFamily: "Poppins",
-                                              fontWeight: FontWeight.w600),
-                                        )),
+                                          community.desc ?? 'No Description',
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            color: cornflowerblue,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: "Roboto",
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Chip(
+                                            side: const BorderSide(color: white),
+                                            padding: const EdgeInsets.all(0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            label: Text(
+                                              (community.types != null &&
+                                                      community.types!.isNotEmpty)
+                                                  ? community.types!.first
+                                                  : 'No Type',
+                                              style: const TextStyle(
+                                                fontFamily: "Roboto",
+                                                fontWeight: FontWeight.w800,
+                                                color: white,
+                                              ),
+                                            ),
+                                            backgroundColor: cornflowerblue,
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CommunityDetails(
+                                                          community: community),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text(
+                                              'Show Community',
+                                              style: TextStyle(
+                                                color: cornflowerblue,
+                                                fontFamily: "Poppins",
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElvatedButtonWidget(
+                text: buttontext,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Homepage(),
                     ),
                   );
                 },
+                backgroundColor: const WidgetStatePropertyAll(green),
+                color: white,
               ),
             ),
-            SizedBox(
-                width: double.infinity,
-                child: ElvatedButtonWidget(
-                    text: buttontext,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const Homepage())); // تم التغيير
-                    },
-                    backgroundColor: WidgetStatePropertyAll(green),
-                    color: white)),
           ],
         ),
       ),

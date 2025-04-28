@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 class EditProfileProvider with ChangeNotifier {
@@ -15,7 +13,7 @@ class EditProfileProvider with ChangeNotifier {
   String education = "";
   String skill = "";
   String dateOfBirth = "";
-  Uint8List imgpath = Uint8List(8); // إذا كانت الصورة جزء من البيانات
+  String imgpath = ""; // تغيير إلى String بدلاً من Uint8List
 
   // Method to set the profile data (used when the user signs up or logs in)
   void loginData({
@@ -45,7 +43,7 @@ class EditProfileProvider with ChangeNotifier {
     required String newEducation,
     required String newSkill,
     required String newDateOfBirth,
-    required Uint8List newImgpath,
+    required String newImgpath, // تغيير إلى String
   }) {
     subname = newsubName;
 
@@ -53,15 +51,13 @@ class EditProfileProvider with ChangeNotifier {
     education = newEducation;
     skill = newSkill;
     dateOfBirth = newDateOfBirth;
-    imgpath = newImgpath;
+    imgpath = newImgpath; // قبول المسار كـ String
     notifyListeners();
   }
 
   void updateProfile({
     required String newName,
     required String newSubName,
-    required String newEmail,
-    required String newPhone,
     required String newGender,
     required String newStreet,
     required String newState,
@@ -70,12 +66,11 @@ class EditProfileProvider with ChangeNotifier {
     required String newEducation,
     required String newSkill,
     required String newDateOfBirth,
-    required Uint8List newImgpath,
+    required String newImgpath, // تغيير إلى String
   }) {
     name = newName;
     subname = newSubName;
-    email = newEmail;
-    phone = newPhone;
+
     gender = newGender;
     street = newStreet;
     state = newState;
@@ -83,9 +78,8 @@ class EditProfileProvider with ChangeNotifier {
     bio = newBio;
     education = newEducation;
     skill = newSkill;
-
     dateOfBirth = newDateOfBirth;
-    imgpath = newImgpath;
+    imgpath = newImgpath; // قبول المسار كـ String
     notifyListeners();
   }
 }

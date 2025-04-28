@@ -156,7 +156,7 @@
 //                     width: 10,
 //                   ),
 //                   Text(
-//                     widget.opportunity.descriptionmodeldetils,
+//                     widget.opportunity.description??'',
 //                     style: TextStyle(
 //                         fontSize: 13,
 //                         color: cornflowerblue,
@@ -175,7 +175,7 @@
 //                         fontFamily: "Roboto"),
 //                   ),
 //                   Text(
-//                     widget.opportunity.responsibilitiesmodeldetils,
+//                     widget.opportunity.,
 //                     style: TextStyle(
 //                         fontSize: 13,
 //                         color: cornflowerblue,
@@ -244,7 +244,7 @@
 //                         width: 10,
 //                       ),
 //                       Text(
-//                         widget.opportunity.applicationdeadlinemodeldetils,
+//                         widget.opportunity.deadline.toString(),
 //                         style: TextStyle(
 //                             fontSize: 13,
 //                             color: cornflowerblue,

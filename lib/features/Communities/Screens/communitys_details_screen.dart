@@ -10,9 +10,10 @@ import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
+import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
-import 'package:y2y/features/user/repo/user_repo2.dart';
+
 
 class CommunityDetails extends StatefulWidget {
   final CommunitiesModell community;
@@ -31,7 +32,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
   void initState() {
     super.initState();
     _userDetailsFuture =
-        UserDetailsRepo().getUserDetails(); // استرجاع تفاصيل المستخدم من API
+        CommunityDetailsRepo().getUserDetails(); // استرجاع تفاصيل المستخدم من API
   }
 
   @override

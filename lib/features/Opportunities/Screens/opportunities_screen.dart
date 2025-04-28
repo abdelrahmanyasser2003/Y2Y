@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
+import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/features/Opportunities/Screens/new_opportunitie_screen.dart';
 import 'package:y2y/features/Opportunities/provider/get_all_reacts_provider.dart';
 import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart';
 import 'package:y2y/features/Opportunities/provider/get_all_opportunities_provider.dart';
 
 class Opportunities extends StatefulWidget {
-  const Opportunities({Key? key}) : super(key: key);
+  const Opportunities({super.key});
 
   @override
   _OpportunitiesState createState() => _OpportunitiesState();
@@ -77,7 +78,7 @@ class _OpportunitiesState extends State<Opportunities> {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: cornflowerblue,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -85,7 +86,7 @@ class _OpportunitiesState extends State<Opportunities> {
             MaterialPageRoute(builder: (context) => const Newopportunitie()),
           );
         },
-        backgroundColor: Colors.purple,
+        backgroundColor: purple,
         child: Image.asset('assets/img/Vector.png'),
       ),
       body: SingleChildScrollView(
@@ -110,151 +111,170 @@ class _OpportunitiesState extends State<Opportunities> {
 
                   String userReact =
                       localUserReacts[opportunity.id ?? ''] ?? '';
-                  String reactColor = reactColors[opportunity.id ?? ''] ?? 'blue';
+                  String reactColor =
+                      reactColors[opportunity.id ?? ''] ?? 'blue';
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            getProfileImage(opportunity.image),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  opportunity.title ?? '',
-                                  style: const TextStyle(
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => Opportunitiesdetils(
+                      //               opportunity: opportunity,
+                      //             )));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            children: [
+                              getProfileImage(opportunity.image),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    opportunity.title ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: cornflowerblue,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedBox(
+                                    width: 230,
+                                    child: Text(
+                                      opportunity.description ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: cornflowerblue,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          const Divider(thickness: 1, color: purple),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  final reactProvider =
+                                      Provider.of<GetAllReactsProvider>(context,
+                                          listen: false);
+
+                                  if (userReact == 'trusted') {
+                                    await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'remove');
+
+                                    setState(() {
+                                      localUserReacts[opportunity.id ?? ''] =
+                                          '';
+                                      reactColors[opportunity.id ?? ''] =
+                                          'blue';
+                                    });
+                                  } else {
+                                    await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'trusted');
+
+                                    setState(() {
+                                      localUserReacts[opportunity.id ?? ''] =
+                                          'trusted';
+                                      reactColors[opportunity.id ?? ''] =
+                                          'green';
+                                    });
+                                  }
+
+                                  final updatedReacts = await reactProvider
+                                      .fetchReacts(opportunity.id ?? '');
+                                  if (!mounted) return;
+                                  setState(() {
+                                    opportunityReacts[opportunity.id ?? ''] =
+                                        updatedReacts ?? [];
+                                  });
+                                },
+                                child: Text(
+                                  userReact == 'trusted'
+                                      ? 'Trusted $trustCount'
+                                      : 'Trust $trustCount',
+                                  style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.blue,
+                                    color: reactColors[opportunity.id ?? ''] ==
+                                            'green'
+                                        ? green
+                                        : cornflowerblue,
+                                    fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                SizedBox(
-                                  width: 230,
-                                  child: Text(
-                                    opportunity.description ?? '',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w400,
-                                    ),
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final reactProvider =
+                                      Provider.of<GetAllReactsProvider>(context,
+                                          listen: false);
+
+                                  if (userReact == 'untrusted') {
+                                    await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'remove');
+
+                                    setState(() {
+                                      localUserReacts[opportunity.id ?? ''] =
+                                          '';
+                                      reactColors[opportunity.id ?? ''] =
+                                          'blue';
+                                    });
+                                  } else {
+                                    await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'untrusted');
+
+                                    setState(() {
+                                      localUserReacts[opportunity.id ?? ''] =
+                                          'untrusted';
+                                      reactColors[opportunity.id ?? ''] = 'red';
+                                    });
+                                  }
+
+                                  final updatedReacts = await reactProvider
+                                      .fetchReacts(opportunity.id ?? '');
+                                  if (!mounted) return;
+                                  setState(() {
+                                    opportunityReacts[opportunity.id ?? ''] =
+                                        updatedReacts ?? [];
+                                  });
+                                },
+                                child: Text(
+                                  userReact == 'untrusted'
+                                      ? 'Untrusted $unTrustCount'
+                                      : 'UnTrust $unTrustCount',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 16,
+                                    color: reactColors[opportunity.id ?? ''] ==
+                                            'red'
+                                        ? Colors.red
+                                        : cornflowerblue,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        const Divider(thickness: 1, color: Colors.purple),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                final reactProvider =
-                                    Provider.of<GetAllReactsProvider>(context,
-                                        listen: false);
-
-                                if (userReact == 'trusted') {
-                                  await reactProvider.makeReact(
-                                      opportunity.id ?? '', 'remove');
-
-                                  setState(() {
-                                    localUserReacts[opportunity.id ?? ''] = '';
-                                    reactColors[opportunity.id ?? ''] = 'blue';
-                                  });
-                                } else {
-                                  await reactProvider.makeReact(
-                                      opportunity.id ?? '', 'trusted');
-
-                                  setState(() {
-                                    localUserReacts[opportunity.id ?? ''] = 'trusted';
-                                    reactColors[opportunity.id ?? ''] = 'green';
-                                  });
-                                }
-
-                                final updatedReacts = await reactProvider
-                                    .fetchReacts(opportunity.id ?? '');
-                                if (!mounted) return;
-                                setState(() {
-                                  opportunityReacts[opportunity.id ?? ''] =
-                                      updatedReacts ?? [];
-                                });
-                              },
-                              child: Text(
-                                userReact == 'trusted'
-                                    ? 'Trusted $trustCount'
-                                    : 'Trust $trustCount',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: reactColors[opportunity.id ?? ''] == 'green'
-                                      ? Colors.green
-                                      : Colors.blue,
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.w700,
-                                ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                final reactProvider =
-                                    Provider.of<GetAllReactsProvider>(context,
-                                        listen: false);
-
-                                if (userReact == 'untrusted') {
-                                  await reactProvider.makeReact(
-                                      opportunity.id ?? '', 'remove');
-
-                                  setState(() {
-                                    localUserReacts[opportunity.id ?? ''] = '';
-                                    reactColors[opportunity.id ?? ''] = 'blue';
-                                  });
-                                } else {
-                                  await reactProvider.makeReact(
-                                      opportunity.id ?? '', 'untrusted');
-
-                                  setState(() {
-                                    localUserReacts[opportunity.id ?? ''] = 'untrusted';
-                                    reactColors[opportunity.id ?? ''] = 'red';
-                                  });
-                                }
-
-                                final updatedReacts = await reactProvider
-                                    .fetchReacts(opportunity.id ?? '');
-                                if (!mounted) return;
-                                setState(() {
-                                  opportunityReacts[opportunity.id ?? ''] =
-                                      updatedReacts ?? [];
-                                });
-                              },
-                              child: Text(
-                                userReact == 'untrusted'
-                                    ? 'Untrusted $unTrustCount'
-                                    : 'UnTrust $unTrustCount',
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 16,
-                                  color:
-                                      reactColors[opportunity.id ?? ''] == 'red'
-                                          ? Colors.red
-                                          : Colors.blue,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -274,7 +294,8 @@ class _OpportunitiesState extends State<Opportunities> {
       );
     }
 
-    final Uri uri = Uri.parse(ApiEndpoints.baseUrl).resolve(imagePath.replaceAll('\\', '/'));
+    final Uri uri = Uri.parse(ApiEndpoints.baseUrl)
+        .resolve(imagePath.replaceAll('\\', '/'));
 
     return CircleAvatar(
       backgroundImage: NetworkImage(uri.toString()),

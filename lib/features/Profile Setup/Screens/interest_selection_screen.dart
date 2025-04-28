@@ -166,8 +166,7 @@ class _InterestselectionState extends State<Interestselection> {
                         labelStyle: TextStyle(color: white),
                         color: WidgetStatePropertyAll(cornflowerblue),
                       ),
-          hieghtspace(hieght: 20),
-                    
+                      hieghtspace(hieght: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -178,8 +177,7 @@ class _InterestselectionState extends State<Interestselection> {
                                 fontWeight: FontWeight.w800,
                                 color: cornflowerblue),
                           ),
-          hieghtspace(hieght: 10),
-                          
+                          hieghtspace(hieght: 10),
                           Row(
                             children: [
                               InputChip(
@@ -267,8 +265,7 @@ class _InterestselectionState extends State<Interestselection> {
                           )
                         ],
                       ),
-          hieghtspace(hieght: 20),
-                    
+                      hieghtspace(hieght: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -279,8 +276,7 @@ class _InterestselectionState extends State<Interestselection> {
                                 fontWeight: FontWeight.w800,
                                 color: cornflowerblue),
                           ),
-                                  hieghtspace(hieght: 10),
-
+                          hieghtspace(hieght: 10),
                           Row(
                             children: [
                               InputChip(
@@ -309,7 +305,7 @@ class _InterestselectionState extends State<Interestselection> {
                                 labelStyle: TextStyle(color: white),
                                 color: WidgetStatePropertyAll(cornflowerblue),
                               ),
-                            Widthspace(width: 10),
+                              Widthspace(width: 10),
                               InputChip(
                                 side: BorderSide(color: white),
                                 avatar: Checkbox(

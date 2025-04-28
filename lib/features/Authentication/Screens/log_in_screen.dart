@@ -11,7 +11,8 @@ import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Authentication/Screens/forget_password_screen.dart';
 import 'package:y2y/features/Authentication/Screens/sign_up_screen.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/Screens/home_screen.dart';
-import 'package:y2y/features/Profile%20Setup/Screens/communitys_suggsestion_screen.dart';
+import 'package:y2y/features/Profile%20Setup/Screens/interest_selection_screen.dart';
+import 'package:y2y/features/Profile%20Setup/Screens/profile_pic_about_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -70,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       // إذا كانت بيانات الدخول صحيحة، ننتقل إلى الصفحة الرئيسية
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Communitysuggsestion()),
+        MaterialPageRoute(builder: (context) => Homepage()),
       );
     } else {
       // إذا كانت البيانات غير صحيحة، نعرض رسالة خطأ
@@ -103,13 +104,10 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(
                     color: white, borderRadius: BorderRadius.circular(10.r)),
                 child: SingleChildScrollView(
-
                   child: Padding(
-
                     padding: EdgeInsets.all(17),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      
                       children: [
                         Text("Login",
                             style: AppStyles()

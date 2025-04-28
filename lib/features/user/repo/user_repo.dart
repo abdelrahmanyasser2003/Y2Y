@@ -1,19 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
-import 'package:y2y/core/networking/dio_helper.dart'; // استيراد DioHelper
-import 'package:y2y/core/utils/storage_helper.dart'; // استيراد StorageHelper
-import 'package:y2y/features/user/models/profile_model.dart';
-import 'package:y2y/features/user/models/user_model.dart'; // استيراد الموديلات
+import 'package:y2y/core/networking/dio_helper.dart';
+import 'package:y2y/core/utils/storage_helper.dart';
+import 'package:y2y/features/user/models/user_model.dart';
 
 class UserRepo {
   // دالة لجلب بيانات البروفايل
-  Future<ProfileModel> getProfileData() async {
+  Future<UserModel> getProfileData() async {
     try {
-      // الحصول على التوكن من الـ Storage
+      // الحصول على التوكن من التخزين
       final token = await StorageHelper().getToken();
       print('🪪 التوكن اللي هيتبعت: Bearer $token');
 
-      // إرسال طلب GET باستخدام DioHelper
+      // تنفيذ طلب GET عبر DioHelper
       final response = await DioHelper().getRequest(
         endPoint: ApiEndpoints.userEndpoint,
         options: Options(
@@ -25,15 +24,13 @@ class UserRepo {
 
       // التحقق من حالة الاستجابة
       if (response.statusCode == 200) {
-        print('📥 Profile Response Data: ${response.data}');
+        print('📥 بيانات البروفايل: ${response.data}');
 
-        // تحويل البيانات إلى نموذج User
+        // تحويل الريسبونس إلى موديل User
         final user = User.fromJson(response.data);
 
-        // التحقق من وجود بيانات المستخدم في الاستجابة
         if (user.data != null) {
-          // إرجاع بيانات البروفايل باستخدام نموذج ProfileModel
-          return ProfileModel.fromUserModel(user.data!);
+          return user.data!;
         } else {
           throw Exception('لا توجد بيانات مستخدم في الريسبونس');
         }

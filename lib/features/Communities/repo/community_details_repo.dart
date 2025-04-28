@@ -4,9 +4,8 @@ import 'package:y2y/core/networking/dio_helper.dart';
 import 'package:y2y/core/utils/storage_helper.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
 
-class UserDetailsRepo {
-  // دالة لجلب تفاصيل المستخدم من الـ API
-  Future<UserDetailsModel> getUserDetails() async {
+class CommunityDetailsRepo {
+   Future<UserDetailsModel> getUserDetails() async {
     try {
       final token = await StorageHelper().getToken();
       final response = await DioHelper().getRequest(

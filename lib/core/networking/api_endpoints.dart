@@ -10,6 +10,9 @@ class ApiEndpoints {
 
   // opportuinities
   static const String createAndGetALLOpportunitiesEndpoint = "opportunity";
+  static const String getALLOpportunitiesinterestsEndpoint =
+      "intersting-community";
+
   static const String getALLReactsEndpoint = "react";
 
   // static const String updateopportunityEndpoint = "opportunity";
@@ -18,9 +21,6 @@ class ApiEndpoints {
   static const String getALLCommunitiesEndpoint = "community";
   static const String joinRequestCommuntiyCommunitiesEndpoint = "join-request";
   static const String cancelJoinCommuntiyCommunitiesEndpoint = "cancel-join";
-
-
-
 
   // USER
   static const String userEndpoint = "user";
