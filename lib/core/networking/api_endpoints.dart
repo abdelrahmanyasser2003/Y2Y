@@ -5,6 +5,7 @@ class ApiEndpoints {
   static const String forgerPasswordEndpoint = "auth/forget-password";
   static const String enterTheCodeEndpoint = "auth/verify-reset";
   static const String resetPasswordEndpoint = "auth/reset-password";
+  static const String logoutEndpoint = "auth/logout";
   static const String getAllCategoriesEndpoint = "category";
   static const String getAllSubCategoriesEndpoint = "subcategory";
 
@@ -24,4 +25,5 @@ class ApiEndpoints {
 
   // USER
   static const String userEndpoint = "user";
+  static const String becomeVolunteerEndpoint = "become-volunteer";
 }

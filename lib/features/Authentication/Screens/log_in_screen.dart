@@ -11,8 +11,7 @@ import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Authentication/Screens/forget_password_screen.dart';
 import 'package:y2y/features/Authentication/Screens/sign_up_screen.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/Screens/home_screen.dart';
-import 'package:y2y/features/Profile%20Setup/Screens/interest_selection_screen.dart';
-import 'package:y2y/features/Profile%20Setup/Screens/profile_pic_about_screen.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

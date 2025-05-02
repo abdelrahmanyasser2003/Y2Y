@@ -7,8 +7,7 @@ import 'package:y2y/features/Communities/provider/community_provider.dart';
 
 import 'package:y2y/features/Opportunities/Screens/opportunities_screen.dart';
 import 'package:y2y/features/Search/Screens/search_screen.dart';
-
-
+import 'package:y2y/features/Settings/screens/settings_overview_screen.dart';
 
 class Homepagecontent extends StatefulWidget {
   const Homepagecontent({super.key});
@@ -58,7 +57,10 @@ class HomepagecontentState extends State<Homepagecontent>
               },
               icon: Image.asset("assets/img/Search-Appbar.png")),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingScreen()));
+              },
               icon: Image.asset("assets/img/Setting-Appbar.png"))
         ],
         bottom: TabBar(

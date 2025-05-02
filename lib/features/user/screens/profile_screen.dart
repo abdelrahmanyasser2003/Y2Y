@@ -258,10 +258,15 @@ class _ProfilepageState extends State<Profilepage> {
                         Text("Skill/ Expertise",
                             style: AppStyles().monwhite16w600style),
                         hieghtspace(hieght: 10),
-                        ProfileContainerWidget(
-                          text: userProvider.user?.skills!.first ?? '',
-                          width: double.infinity,
-                        ),
+                        Text("Skill/ Expertise", style: AppStyles().monwhite16w600style),
+hieghtspace(hieght: 10),
+ProfileContainerWidget(
+  text: (userProvider.user?.skills != null && userProvider.user!.skills!.isNotEmpty)
+      ? userProvider.user!.skills!.first
+      : 'No skill found',
+  width: double.infinity,
+),
+
                         hieghtspace(hieght: 10),
                       ],
                     ),

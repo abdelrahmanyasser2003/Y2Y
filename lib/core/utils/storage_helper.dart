@@ -63,4 +63,19 @@ class StorageHelper {
   Future<void> removeData({required String key}) async {
     await storage.delete(key: key);
   }
+
+  // حفظ الـ user ID
+  Future<void> saveUserId(String userId) async {
+    await storage.write(key: 'userId', value: userId);
+  }
+
+  // جلب الـ user ID
+  Future<String?> getUserId() async {
+    return await storage.read(key: 'userId');
+  }
+
+  // حذف الـ user ID
+  Future<void> removeUserId() async {
+    await storage.delete(key: 'userId');
+  }
 }

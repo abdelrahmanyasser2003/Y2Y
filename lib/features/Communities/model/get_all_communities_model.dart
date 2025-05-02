@@ -11,7 +11,7 @@ class CommunitiesModell {
   int? limitOfUsers;
   String? roles;
   Location? location;
-  String? volunteer;
+  Volunteer? volunteer;  // تعديل هنا
   String? status;
   Date? date;
   String? createdBy;
@@ -36,7 +36,7 @@ class CommunitiesModell {
     this.limitOfUsers,
     this.roles,
     this.location,
-    this.volunteer,
+    this.volunteer,  // تعديل هنا
     this.status,
     this.date,
     this.createdBy,
@@ -73,7 +73,9 @@ class CommunitiesModell {
         location: json["location"] == null
             ? null
             : Location.fromJson(json["location"]),
-        volunteer: json["volunteer"],
+        volunteer: json["volunteer"] == null
+            ? null
+            : Volunteer.fromJson(json["volunteer"]),  // تعديل هنا
         status: json["status"],
         date: json["date"] == null ? null : Date.fromJson(json["date"]),
         createdBy: json["createdBy"],
@@ -106,7 +108,7 @@ class CommunitiesModell {
         "limitOfUsers": limitOfUsers,
         "roles": roles,
         "location": location?.toJson(),
-        "volunteer": volunteer,
+        "volunteer": volunteer?.toJson(),  // تعديل هنا
         "status": status,
         "date": date?.toJson(),
         "createdBy": createdBy,
@@ -119,6 +121,34 @@ class CommunitiesModell {
         "__v": v,
         "numberOfMembers": numberOfMembers,
         "id": datumId,
+      };
+}
+
+class Volunteer {
+  String? firstName;
+  String? lastName;
+  String? profileImage;
+  String? userName;
+
+  Volunteer({
+    this.firstName,
+    this.lastName,
+    this.profileImage,
+    this.userName,
+  });
+
+  factory Volunteer.fromJson(Map<String, dynamic> json) => Volunteer(
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        profileImage: json["profileImage"],
+        userName: json["userName"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "firstName": firstName,
+        "lastName": lastName,
+        "profileImage": profileImage,
+        "userName": userName,
       };
 }
 

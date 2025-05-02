@@ -1,18 +1,18 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path; // مكتبة المسارات
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/utils/animated_snack_dialog.dart';
-import 'package:y2y/core/utils/storage_helper.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/screens/home_screen.dart';
-import 'package:y2y/features/Opportunities/model/opportunitys_model.dart';
 import 'package:y2y/features/Opportunities/provider/new_opportunity_provider.dart';
-import 'package:y2y/features/Opportunities/repo/opportunity_repo.dart';
 
 class Newopportunitie extends StatefulWidget {
   const Newopportunitie({super.key});
@@ -30,7 +30,7 @@ class _NewopportunitieState extends State<Newopportunitie> {
   TextEditingController durationcontroller = TextEditingController();
   TextEditingController applicationdeadlinecontroller = TextEditingController();
   TextEditingController requirementscontroller = TextEditingController();
-  String selectedCategory = 'Programming';
+  TextEditingController linkcontroller = TextEditingController();
 
   bool isbuttonenabled = false;
   validateform() {
@@ -39,9 +39,12 @@ class _NewopportunitieState extends State<Newopportunitie> {
     });
   }
 
-  Future _selectdate() async {
+  Future _selectdate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
-        context: context, firstDate: DateTime.now(), lastDate: DateTime(2026));
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2026),
+    );
     if (picked != null) {
       setState(() {
         applicationdeadlinecontroller.text = picked.toString().split(" ")[0];
@@ -61,12 +64,19 @@ class _NewopportunitieState extends State<Newopportunitie> {
     }
   }
 
-  showmodel() {
+  Future<File> convertUint8ListToFile(Uint8List data, String filename) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File(path.join(tempDir.path, filename));
+    return await file.writeAsBytes(data);
+  }
+
+  showModel(BuildContext context) {
     return showModalBottomSheet(
-      context: context,
+      context: context, // استخدام BuildContext هنا
       builder: (BuildContext context) {
         return Container(
-          color: skyblue,
+          color:
+              cornflowerblue, // تغيير skyblue إلى Colors.skyBlue أو أي لون آخر
           padding: const EdgeInsets.all(10),
           height: 120,
           child: Column(
@@ -208,7 +218,7 @@ class _NewopportunitieState extends State<Newopportunitie> {
                         bottom: 25,
                         child: IconButton(
                           onPressed: () {
-                            showmodel();
+                            showModel(context);
                           },
                           icon: const Icon(
                             Icons.add_photo_alternate_outlined,
@@ -224,100 +234,54 @@ class _NewopportunitieState extends State<Newopportunitie> {
               SizedBox(
                 height: 5,
               ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Company",
-                        style: TextStyle(
-                            color: white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            fontFamily: "Montserrat"),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      SizedBox(
-                        width: 150,
-                        child: TextFormFieldWidget(
-                            controller: companycontroller,
-                            onChanged: null,
-                            hintText: "Name of company or organization...",
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter company name';
-                              }
-                              return null;
-                            },
-                            suffixIcon: null,
-                            obscureText: null,
-                            keyboardType: TextInputType.text,
-                            maxLength: null,
-                            maxLines: null,
-                            textInputAction: TextInputAction.next),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Category",
-                        style: TextStyle(
-                            color: white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            fontFamily: "Montserrat"),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        width: 150,
-                        decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: DropdownButton(
-                          isExpanded: true,
-                          icon: const Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.grey,
-                          ),
-                          style: const TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: "Lato"),
-                          dropdownColor: white,
-                          value: selectedCategory,
-                          items: <String>[
-                            'Programming',
-                            'AI',
-                            'Data Science',
-                            'Web Development',
-                            'Cybersecurity',
-                            'Accounting'
-                          ].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? newvalue) {
-                            setState(() {
-                              selectedCategory = newvalue!;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              Text(
+                "Opportunity Link",
+                style: TextStyle(
+                    color: white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontFamily: "Montserrat"),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              TextFormFieldWidget(
+                hintText: "opportunity link",
+                controller: linkcontroller,
+                textInputAction: TextInputAction.next,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                "Company",
+                style: TextStyle(
+                    color: white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontFamily: "Montserrat"),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: TextFormFieldWidget(
+                    controller: companycontroller,
+                    onChanged: null,
+                    hintText: "Name of company or organization...",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter company name';
+                      }
+                      return null;
+                    },
+                    suffixIcon: null,
+                    obscureText: null,
+                    keyboardType: TextInputType.text,
+                    maxLength: null,
+                    maxLines: null,
+                    textInputAction: TextInputAction.next),
               ),
               SizedBox(
                 height: 15,
@@ -333,24 +297,20 @@ class _NewopportunitieState extends State<Newopportunitie> {
               SizedBox(
                 height: 5,
               ),
-              SingleChildScrollView(
-                child: TextFormFieldWidget(
-                    controller: descriptioncontroller,
-                    onChanged: null,
-                    hintText: "Describe this opportunity...",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter description';
-                      }
-                      return null;
-                    },
-                    suffixIcon: null,
-                    obscureText: null,
-                    keyboardType: TextInputType.text,
-                    maxLength: 200,
-                    maxLines: 4,
-                    textInputAction: TextInputAction.next),
-              ),
+              TextFormFieldWidget(
+                  controller: descriptioncontroller,
+                  onChanged: null,
+                  hintText: "Describe this opportunity...",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter description';
+                    }
+                    return null;
+                  },
+                  suffixIcon: null,
+                  obscureText: null,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next),
               SizedBox(
                 height: 15,
               ),
@@ -487,77 +447,68 @@ class _NewopportunitieState extends State<Newopportunitie> {
                 ),
                 readOnly: true,
                 onTap: () {
-                  _selectdate();
+                  _selectdate(context);
                 },
               ),
               SizedBox(
                 height: 20,
               ),
               SizedBox(
-                  width: double.infinity,
-                  child: ElvatedButtonWidget(
-                    text: 'Submit',
-                    onPressed: () async {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        if (imgPath != null) {
-                          // الحصول على التوكين
-                          String? token = await StorageHelper().getToken();
+                width: double.infinity,
+                child: ElvatedButtonWidget(
+                  text: 'Submit',
+                  onPressed: () async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      if (imgPath != null) {
+                        final provider = Provider.of<CreateOpportunityProvider>(
+                            context,
+                            listen: false);
 
-                          // جمع البيانات من الـ controllers
-                          String title = opportunitytitlecontroller.text;
-                          String description = descriptioncontroller.text;
-                          String deadline = applicationdeadlinecontroller.text;
+                        // تحويل الـ imgPath من نوع Uint8List إلى File
+                        File imageFile = await convertUint8ListToFile(imgPath!,
+                            'image.jpg'); // تغيير 'image.jpg' حسب الحاجة
 
-                          // استدعاء دالة sendData لإرسال البيانات إلى الـ API
-                          if (token != null) {
-                            await sendData(
-                              token: token,
-                              title: title,
-                              description: description,
-                              deadline: deadline,
-                              imageBytes:
-                                  imgPath!, // آمنة هنا بعد التحقق من null
-                            );
-                          } else {
-                            print("Token is null");
-                          }
+                        // إرسال البيانات إلى الـ provider
+                        await provider.createOpportunity(
+                          title: opportunitytitlecontroller.text,
+                          deadline: applicationdeadlinecontroller.text,
+                          description: descriptioncontroller.text,
+                          company: companycontroller.text,
+                          responsibilities: responsibilitiescontroller.text,
+                          requirements: requirementscontroller.text,
+                          duration: durationcontroller.text,
+                          link: linkcontroller.text, // غيّرها حسب الحاجة
+                          imageFile: imageFile, // تم تحويل الصورة إلى File
+                        );
 
-                          // حفظ البيانات في Provider
-                          final opportunity = OpportunityDetilsModel(
-                            opportunitytitledetils: title,
-                            companymodeldetils: companycontroller.text,
-                            requirementsmodeldetils:
-                                requirementscontroller.text,
-                            descriptionmodeldetils: description,
-                            responsibilitiesmodeldetils:
-                                responsibilitiescontroller.text,
-                            durationmodeldetils: durationcontroller.text,
-                            caregory: selectedCategory,
-                            imagepath: imgPath!, // آمنة هنا أيضًا
-                            applicationdeadlinemodeldetils: deadline,
-                          );
-
-                          Provider.of<NewOpportunityProvider>(context,
-                                  listen: false)
-                              .addOpportunity(opportunity);
-
-                          // التنقل للصفحة التالية
+                        // التحقق من حالة الاستجابة
+                        if (provider.errorMessage == null) {
+                          // تم بنجاح
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => Homepage()),
                           );
                         } else {
-                          // عرض رسالة اختيار صورة
-
-                          showAnimatedSnackDialog(context,
-                              message: 'Please Choose Image',
-                              type: AnimatedSnackBarType.warning);
+                          // فيه خطأ
+                          showAnimatedSnackDialog(
+                            context,
+                            message: provider.errorMessage!,
+                            type: AnimatedSnackBarType.error,
+                          );
                         }
+                      } else {
+                        showAnimatedSnackDialog(
+                          context,
+                          message: 'Please choose an image',
+                          type: AnimatedSnackBarType.warning,
+                        );
                       }
-                    },
-                    color: white,
-                    backgroundColor: WidgetStatePropertyAll(green),
-                  )),
+                    }
+                  },
+                  color: white,
+                  backgroundColor: WidgetStatePropertyAll(green),
+                ),
+              ),
             ]),
           ),
         ),

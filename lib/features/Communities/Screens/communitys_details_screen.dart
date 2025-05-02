@@ -14,7 +14,6 @@ import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
 
-
 class CommunityDetails extends StatefulWidget {
   final CommunitiesModell community;
 
@@ -31,8 +30,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
   @override
   void initState() {
     super.initState();
-    _userDetailsFuture =
-        CommunityDetailsRepo().getUserDetails(); // استرجاع تفاصيل المستخدم من API
+    _userDetailsFuture = CommunityDetailsRepo()
+        .getUserDetails(); // استرجاع تفاصيل المستخدم من API
   }
 
   @override
@@ -270,7 +269,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.community.volunteer ?? "",
+                                  widget.community.volunteer?.userName ?? "",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: cornflowerblue,

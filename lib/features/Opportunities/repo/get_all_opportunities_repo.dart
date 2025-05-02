@@ -6,7 +6,7 @@ import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart
 import 'package:y2y/features/Opportunities/model/opportnmity_state_model.dart';
 
 class GetAllOpportunitiesRepo {
-  Future<List<GetAllOpportunties>> fetchOpportunities() async {
+  Future<List<GetAllOpportunities>> fetchOpportunities() async {
     try {
       final token = await StorageHelper().getToken();
       print('🪪 التوكن اللي هيتبعت: Bearer $token');

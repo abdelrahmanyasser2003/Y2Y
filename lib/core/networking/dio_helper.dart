@@ -87,4 +87,21 @@ class DioHelper {
       rethrow;
     }
   }
+
+  deleteRequest({
+    required String endPoint,
+    Map<String, dynamic>? data,
+    Options? options,
+  }) async {
+    try {
+      final Response response = await dio!.delete(
+        endPoint,
+        data: data,
+        options: options,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

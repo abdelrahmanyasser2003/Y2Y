@@ -2,7 +2,7 @@ import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart
 
 class OpportnmityStateModel {
   bool? success;
-  List<GetAllOpportunties>? data;
+  List<GetAllOpportunities>? data;
 
   OpportnmityStateModel({
     this.success,
@@ -14,8 +14,8 @@ class OpportnmityStateModel {
         success: json["success"],
         data: json["data"] == null
             ? []
-            : List<GetAllOpportunties>.from(
-                json["data"]!.map((x) => GetAllOpportunties.fromJson(x))),
+            : List<GetAllOpportunities>.from(
+                json["data"]!.map((x) => GetAllOpportunities.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

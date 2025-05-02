@@ -5,12 +5,12 @@ class ElvatedButtonWidget extends StatelessWidget {
   const ElvatedButtonWidget(
       {super.key,
       this.fontSize,
-      required this.text,
+      this.text,
       this.icon,
       required this.onPressed,
       required this.backgroundColor,
       required this.color});
-  final String text;
+  final String? text;
   final IconData? icon;
 
   final double? fontSize;
@@ -21,6 +21,7 @@ class ElvatedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      
       onPressed: onPressed,
       style: ButtonStyle(
         elevation: WidgetStatePropertyAll(5),
@@ -30,7 +31,7 @@ class ElvatedButtonWidget extends StatelessWidget {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       ),
       child: Text(
-        text,
+        text??'',
         style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: fontSize ?? 15.sp,

@@ -6,11 +6,11 @@ class GetAllOpportunitiesProvider with ChangeNotifier {
   final GetAllOpportunitiesRepo _opportunitiesService =
       GetAllOpportunitiesRepo();
 
-  List<GetAllOpportunties> _opportunities = [];
+  List<GetAllOpportunities> _opportunities = [];
   bool _isLoading = false;
   bool _hasError = false;
 
-  List<GetAllOpportunties> get opportunities => _opportunities;
+  List<GetAllOpportunities> get opportunities => _opportunities;
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
 
@@ -30,7 +30,7 @@ class GetAllOpportunitiesProvider with ChangeNotifier {
     }
   }
 
-  void addOpportunity(GetAllOpportunties opportunity) {
+  void addOpportunity(GetAllOpportunities opportunity) {
     _opportunities.add(opportunity);
     notifyListeners();
   }

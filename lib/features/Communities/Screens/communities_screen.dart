@@ -34,10 +34,9 @@ class _CommunitiesState extends State<Communities> {
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Joined Communities",
+                "My Communities",
                 style: TextStyle(
                   color: white,
                   fontFamily: "Montserrat",

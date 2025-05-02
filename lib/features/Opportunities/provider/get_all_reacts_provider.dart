@@ -32,13 +32,16 @@ class GetAllReactsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> makeReact(String opportunityId, String reactType) async {
-    try {
-      await MakeReactRepo().makeReact(opportunityId, reactType);
-      await fetchReacts(opportunityId); // تحدث الأرقام بعد الريأكت
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+Future<bool> makeReact(String opportunityId, String reactType) async {
+  try {
+    await MakeReactRepo().makeReact(opportunityId, reactType);
+    await fetchReacts(opportunityId); // تحديث التفاعلات بعد العملية
+    return true; // إعادة true عند نجاح العملية
+  } catch (e) {
+    _errorMessage = e.toString();
+    notifyListeners();
+    return false; // إعادة false في حالة حدوث خطأ
   }
+}
+
 }

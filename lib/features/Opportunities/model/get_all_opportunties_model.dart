@@ -1,4 +1,4 @@
-class GetAllOpportunties {
+class GetAllOpportunities {
   String? id;
   String? title;
   String? description;
@@ -11,8 +11,13 @@ class GetAllOpportunties {
   DateTime? updatedAt;
   int? v;
   String? slug;
+  String? company;
+  String? responsibilities;
+  String? requirements;
+  String? duration;
+  String? link;
 
-  GetAllOpportunties({
+  GetAllOpportunities({
     this.id,
     this.title,
     this.description,
@@ -25,10 +30,15 @@ class GetAllOpportunties {
     this.updatedAt,
     this.v,
     this.slug,
+    this.company,
+    this.responsibilities,
+    this.requirements,
+    this.duration,
+    this.link,
   });
 
-  factory GetAllOpportunties.fromJson(Map<String, dynamic> json) =>
-      GetAllOpportunties(
+  factory GetAllOpportunities.fromJson(Map<String, dynamic> json) =>
+      GetAllOpportunities(
         id: json["_id"],
         title: json["title"],
         description: json["description"],
@@ -39,9 +49,9 @@ class GetAllOpportunties {
             ? null
             : CreatedBy.fromJson(json["createdBy"]),
         updatedBy: json["updatedBy"],
-        react: json["react"] == null
-            ? []
-            : List<React>.from(json["react"]!.map((x) => React.fromJson(x))),
+        react: (json["react"] as List<dynamic>?)
+            ?.map((x) => React.fromJson(x))
+            .toList(),
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -50,6 +60,11 @@ class GetAllOpportunties {
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
         slug: json["slug"],
+        company: json["company"],
+        responsibilities: json["responsibilities"],
+        requirements: json["requirements"],
+        duration: json["duration"],
+        link: json["link"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -60,13 +75,16 @@ class GetAllOpportunties {
         "image": image,
         "createdBy": createdBy?.toJson(),
         "updatedBy": updatedBy,
-        "react": react == null
-            ? []
-            : List<dynamic>.from(react!.map((x) => x.toJson())),
+        "react": react?.map((x) => x.toJson()).toList(),
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
         "slug": slug,
+        "company": company,
+        "responsibilities": responsibilities,
+        "requirements": requirements,
+        "duration": duration,
+        "link": link,
       };
 }
 
