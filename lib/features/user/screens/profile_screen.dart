@@ -132,6 +132,8 @@ class _ProfilepageState extends State<Profilepage> {
                                               imgpath: userProvider
                                                       .user?.profileImage ??
                                                   '',
+                                              phone: userProvider.user?.phone ??
+                                                  '',
                                             )));
                                 // هنا يمكنك فتح شاشة تعديل البيانات
                               },
@@ -258,16 +260,21 @@ class _ProfilepageState extends State<Profilepage> {
                         Text("Skill/ Expertise",
                             style: AppStyles().monwhite16w600style),
                         hieghtspace(hieght: 10),
-                        Text("Skill/ Expertise", style: AppStyles().monwhite16w600style),
-hieghtspace(hieght: 10),
-ProfileContainerWidget(
-  text: (userProvider.user?.skills != null && userProvider.user!.skills!.isNotEmpty)
-      ? userProvider.user!.skills!.first
-      : 'No skill found',
-  width: double.infinity,
-),
-
+                        ProfileContainerWidget(
+                          text: (userProvider.user?.skills != null &&
+                                  userProvider.user!.skills!.isNotEmpty)
+                              ? userProvider.user!.skills!.first
+                              : 'No skill found',
+                          width: double.infinity,
+                        ),
                         hieghtspace(hieght: 10),
+                        Text("Phone Number",
+                            style: AppStyles().monwhite16w600style),
+                        hieghtspace(hieght: 10),
+                        ProfileContainerWidget(
+                          text: userProvider.user?.phone ?? '',
+                          width: double.infinity,
+                        ),
                       ],
                     ),
                   ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
-import 'package:y2y/features/user/provider/user_details_provider.dart';
+import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 import 'package:y2y/features/user/widges/user_details_container_widget.dart';
 
 class Userdetils extends StatefulWidget {
-  const Userdetils({super.key});
+  const Userdetils({super.key, required this.request});
+  final AskToJoin request;
 
   @override
   State<Userdetils> createState() => _UserdetilsState();
@@ -16,7 +17,6 @@ class Userdetils extends StatefulWidget {
 class _UserdetilsState extends State<Userdetils> {
   @override
   Widget build(BuildContext context) {
-    final userdetilss = Provider.of<UserDetailsProvider>(context).userdetils;
     return Scaffold(
         backgroundColor: white,
         appBar: PreferredSize(
@@ -25,7 +25,6 @@ class _UserdetilsState extends State<Userdetils> {
         body: ListView.builder(
             itemCount: 1,
             itemBuilder: (context, index) {
-              final uuserdetils = userdetilss[index];
               return SingleChildScrollView(
                 child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
@@ -33,13 +32,13 @@ class _UserdetilsState extends State<Userdetils> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              // CircleAvatar(
-                              //   backgroundImage:
-                              //       MemoryImage(uuserdetils.imagepath),
-                              //   radius: 40,
-                              // ),
+                              CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('uuserdetils.imagepath'),
+                                radius: 40,
+                              ),
                               SizedBox(
                                 width: 10,
                               ),
@@ -47,32 +46,25 @@ class _UserdetilsState extends State<Userdetils> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Ahmed Saad",
+                                    '${widget.request.firstName} ${widget.request.lastName}',
                                     style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontFamily: "Roboto",
                                       fontWeight: FontWeight.w700,
                                       color: cornflowerblue,
                                     ),
                                   ),
                                   Text(
-                                    uuserdetils.userNameModel,
+                                    'uuserdetils.',
                                     style: TextStyle(
                                         fontSize: 15,
                                         fontFamily: "Roboto",
                                         fontWeight: FontWeight.w500,
                                         color: cornflowerblue),
                                   ),
-                                  Text(
-                                    "Community Owner /\nVolnteeer",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: "Roboto",
-                                        fontWeight: FontWeight.w400,
-                                        color: cornflowerblue),
-                                  ),
                                 ],
                               ),
+                              Widthspace(width: 70),
                               IconButton(
                                 onPressed: () {
                                   Navigator.pop(context);
@@ -212,7 +204,7 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: uuserdetils.dateModel),
+                              text: 'uuserdetils.dateModel'),
                           SizedBox(
                             height: 15,
                           ),
@@ -227,8 +219,7 @@ class _UserdetilsState extends State<Userdetils> {
                           SizedBox(
                             height: 5,
                           ),
-                          UserDetailsContainerWidget(
-                              text: uuserdetils.educationModel),
+                          UserDetailsContainerWidget(text: 'widget.request'),
                           SizedBox(
                             height: 15,
                           ),
@@ -244,7 +235,7 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: uuserdetils.skillModel),
+                              text: 'uuserdetils.skillModel'),
                           SizedBox(
                             height: 15,
                           ),
@@ -276,7 +267,7 @@ class _UserdetilsState extends State<Userdetils> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        uuserdetils.bioModel,
+                                        'uuserdetils.bioModel',
                                         overflow: TextOverflow.visible,
                                         style: TextStyle(
                                           color: cornflowerblue,

@@ -1,12 +1,12 @@
-class GetAllCommunitiesModel {
+class CommunitiesModellvoulnteer {
   String? id;
   String? name;
   String? slug;
   List<String>? types;
   String? desc;
   String? image;
-  Category? category;
-  Category? subcategory;
+  String? category;
+  Subcategory? subcategory;
   List<String>? members;
   int? limitOfUsers;
   String? roles;
@@ -23,7 +23,7 @@ class GetAllCommunitiesModel {
   int? numberOfMembers;
   String? datumId;
 
-  GetAllCommunitiesModel({
+  CommunitiesModellvoulnteer({
     this.id,
     this.name,
     this.slug,
@@ -49,8 +49,8 @@ class GetAllCommunitiesModel {
     this.datumId,
   });
 
-  factory GetAllCommunitiesModel.fromJson(Map<String, dynamic> json) =>
-      GetAllCommunitiesModel(
+  factory CommunitiesModellvoulnteer.fromJson(Map<String, dynamic> json) =>
+      CommunitiesModellvoulnteer(
         id: json["_id"],
         name: json["name"],
         slug: json["slug"],
@@ -59,12 +59,10 @@ class GetAllCommunitiesModel {
             : List<String>.from(json["types"]!.map((x) => x)),
         desc: json["desc"],
         image: json["image"],
-        category: json["category"] == null
-            ? null
-            : Category.fromJson(json["category"]),
+        category: json["category"],
         subcategory: json["subcategory"] == null
             ? null
-            : Category.fromJson(json["subcategory"]),
+            : Subcategory.fromJson(json["subcategory"]),
         members: json["members"] == null
             ? []
             : List<String>.from(json["members"]!.map((x) => x)),
@@ -102,7 +100,7 @@ class GetAllCommunitiesModel {
         "types": types == null ? [] : List<dynamic>.from(types!.map((x) => x)),
         "desc": desc,
         "image": image,
-        "category": category?.toJson(),
+        "category": category,
         "subcategory": subcategory?.toJson(),
         "members":
             members == null ? [] : List<dynamic>.from(members!.map((x) => x)),
@@ -135,6 +133,7 @@ class AskToJoin {
   String? roles;
   List<dynamic>? interested;
   List<dynamic>? skills;
+  String? profileImage; // ✅ أضف هذا
 
   AskToJoin({
     this.firstName,
@@ -146,6 +145,7 @@ class AskToJoin {
     this.roles,
     this.interested,
     this.skills,
+    this.profileImage, // ✅ أضف هذا
   });
 
   factory AskToJoin.fromJson(Map<String, dynamic> json) => AskToJoin(
@@ -163,6 +163,7 @@ class AskToJoin {
         skills: json["skills"] == null
             ? []
             : List<dynamic>.from(json["skills"]!.map((x) => x)),
+        profileImage: json["profileImage"], // ✅ أضف هذا
       );
 
   Map<String, dynamic> toJson() => {
@@ -178,6 +179,7 @@ class AskToJoin {
             : List<dynamic>.from(interested!.map((x) => x)),
         "skills":
             skills == null ? [] : List<dynamic>.from(skills!.map((x) => x)),
+        "profileImage": profileImage, // ✅ أضف هذا
       };
 }
 
@@ -202,30 +204,6 @@ class Location {
         "state": state,
         "city": city,
         "street": street,
-      };
-}
-
-class Category {
-  String? name;
-  String? slug;
-  String? image;
-
-  Category({
-    this.name,
-    this.slug,
-    this.image,
-  });
-
-  factory Category.fromJson(Map<String, dynamic> json) => Category(
-        name: json["name"],
-        slug: json["slug"],
-        image: json["image"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "slug": slug,
-        "image": image,
       };
 }
 
@@ -266,6 +244,30 @@ class Date {
             schedule == null ? [] : List<dynamic>.from(schedule!.map((x) => x)),
         "startAt": startAt?.toIso8601String(),
         "finishAt": finishAt?.toIso8601String(),
+      };
+}
+
+class Subcategory {
+  String? name;
+  String? slug;
+  String? image;
+
+  Subcategory({
+    this.name,
+    this.slug,
+    this.image,
+  });
+
+  factory Subcategory.fromJson(Map<String, dynamic> json) => Subcategory(
+        name: json["name"],
+        slug: json["slug"],
+        image: json["image"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "slug": slug,
+        "image": image,
       };
 }
 

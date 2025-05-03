@@ -1,33 +1,28 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
-import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
-import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
-import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
+import 'package:y2y/features/user/screens/user_details_screen.dart';
 
-class CommunityDetails extends StatefulWidget {
-  final GetAllCommunitiesModel community;
-
-  const CommunityDetails({super.key, required this.community});
+class JoinedCommynitiyScreen extends StatefulWidget {
+  const JoinedCommynitiyScreen({super.key, required this.joinedCommunity});
+  final CommunitiesModellvoulnteer joinedCommunity;
 
   @override
-  State<CommunityDetails> createState() => _CommunityDetailsState();
+  State<JoinedCommynitiyScreen> createState() => _JoinedCommynitiyScreenState();
 }
 
-class _CommunityDetailsState extends State<CommunityDetails> {
-  late Future<UserDetailsModel> _userDetailsFuture;
-  bool hasRequested = false;
-
+class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
+  bool showAllRequests = false;
   @override
   void initState() {
     super.initState();
@@ -35,8 +30,13 @@ class _CommunityDetailsState extends State<CommunityDetails> {
         .getUserDetails(); // استرجاع تفاصيل المستخدم من API
   }
 
+  late Future<UserDetailsModel> _userDetailsFuture;
   @override
   Widget build(BuildContext context) {
+    final members = widget.joinedCommunity.members ?? [];
+    final displayedRequests =
+        showAllRequests ? members : members.take(3).toList();
+
     return Scaffold(
         backgroundColor: white,
         appBar: PreferredSize(
@@ -70,10 +70,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             CircleAvatar(
                               radius: 40,
                               backgroundImage: (widget
-                                          .community.image?.isNotEmpty ??
+                                          .joinedCommunity.image?.isNotEmpty ??
                                       false)
                                   ? NetworkImage(
-                                      '${ApiEndpoints.baseUrl}${widget.community.image?.replaceAll("\\", "/")}')
+                                      '${ApiEndpoints.baseUrl}${widget.joinedCommunity.image?.replaceAll("\\", "/")}')
                                   : AssetImage(
                                           'assets/images/default_community.png')
                                       as ImageProvider,
@@ -84,7 +84,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.community.name ?? '',
+                                    widget.joinedCommunity.name ?? '',
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: cornflowerblue,
@@ -94,7 +94,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    widget.community.desc ?? '',
+                                    widget.joinedCommunity.desc ?? '',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: cornflowerblue,
@@ -139,8 +139,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.category?.name ?? 'Unknown',
+                                widget.joinedCommunity.types?.first ??
+                                    'Unknown',
                                 style: const TextStyle(
+                                  fontSize: 12,
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -165,7 +167,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.subcategory!.name ?? 'Unknown',
+                                widget.joinedCommunity.subcategory!.name ??
+                                    'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -189,7 +192,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 55),
                             Text(
-                              widget.community.numberOfMembers?.toString() ??
+                              widget.joinedCommunity.numberOfMembers
+                                      ?.toString() ??
                                   '0',
                               style: TextStyle(
                                 fontSize: 11,
@@ -210,7 +214,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 65),
                             Text(
-                              widget.community.location!.state ?? 'Unknown',
+                              widget.joinedCommunity.location!.state ??
+                                  'Unknown',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: cornflowerblue,
@@ -254,7 +259,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.startDate!
+                                          .joinedCommunity.date!.startDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -270,7 +275,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.community.volunteer?.userName ?? "",
+                                  widget.joinedCommunity.volunteer?.userName ??
+                                      "",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: cornflowerblue,
@@ -292,7 +298,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.endDate!
+                                          .joinedCommunity.date!.endDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -330,7 +336,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.first ??
+                                      widget.joinedCommunity.date?.schedule
+                                              ?.first ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -351,7 +358,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.startAt
+                                                .joinedCommunity.date?.startAt
                                                 .toString() ??
                                             ''),
                                       ),
@@ -369,7 +376,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.last ??
+                                      widget.joinedCommunity.date?.schedule
+                                              ?.last ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -390,7 +398,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.finishAt
+                                                .joinedCommunity.date?.finishAt
                                                 .toString() ??
                                             ''),
                                       ),
@@ -422,7 +430,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.joinedCommunity.location?.city ??
+                                          '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -446,7 +455,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.joinedCommunity.location?.city ??
+                                          '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -477,7 +487,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                         ),
                         hieghtspace(hieght: 5),
                         Text(
-                          widget.community.roles ?? '',
+                          widget.joinedCommunity.roles ?? '',
                           style: TextStyle(
                             fontSize: 13,
                             color: cornflowerblue,
@@ -491,10 +501,11 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                           thickness: 0.5,
                         ),
                         hieghtspace(hieght: 10),
+                        // العنوان مع عدد الطلبات
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "Members :",
                               style: TextStyle(
                                 fontSize: 20,
@@ -503,128 +514,73 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 fontFamily: "Roboto",
                               ),
                             ),
-                            Text(
-                              "View all >",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: "Roboto",
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  showAllRequests = !showAllRequests;
+                                });
+                              },
+                              child: Text(
+                                showAllRequests
+                                    ? "View less"
+                                    : "View all (${widget.joinedCommunity.members?.length ?? 0})",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: cornflowerblue,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Roboto",
+                                ),
                               ),
                             ),
                           ],
                         ),
+
                         hieghtspace(hieght: 10),
-                        ListrileCommunityWidget(
-                          title: 'ss',
-                          onTap: () {},
+                        ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              const Divider(color: purple),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: displayedRequests.length,
+                          itemBuilder: (context, index) {
+                            final join = widget.joinedCommunity.members ?? [];
+                            final displayedRequests =
+                                showAllRequests ? join : join.take(3).toList();
+                            final joined = displayedRequests[index];
+
+                            return ListrileCommunityWidget(
+                              title: "",
+                              onTap: () {},
+                            );
+                          },
                         ),
+
                         hieghtspace(hieght: 90),
                         SizedBox(
                             width: double.infinity,
-                            height: 55,
+                            height: 60,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                if (widget.community.id == null) {
-                                  showAnimatedSnackDialog(
-                                    context,
-                                    type: AnimatedSnackBarType.error,
-                                    message:
-                                        "Community data is missing or invalid.",
-                                  );
-                                  return;
-                                }
-
-                                if (hasRequested) {
-                                  // عرض SnackBar لتأكيد الإلغاء مباشرة
-                                  final shouldCancel = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      backgroundColor: cornflowerblue,
-                                      title: Text(
-                                        'Are you sure you want to cancel the request?',
-                                        style: TextStyle(
-                                            color: white,
-                                            fontFamily: 'Roboto',
-                                            fontSize: 19),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: Text('NO',
-                                              style: TextStyle(
-                                                  color: white,
-                                                  fontFamily: 'Roboto')),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: Text('YES',
-                                              style: TextStyle(
-                                                  color: white,
-                                                  fontFamily: 'Roboto')),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-
-                                  if (shouldCancel == true) {
-                                    // إلغاء الطلب عبر الـ API
-                                    await CancelJoinRepo().cancelJoinRequest(
-                                      widget.community.id?.toString() ??
-                                          '', // التأكد أن id ليس null
-                                      context,
-                                    );
-
-                                    setState(() {
-                                      hasRequested =
-                                          false; // إعادة تعيين حالة الطلب
-                                    });
-                                  }
-                                } else {
-                                  // تحقق من provider.isLoading قبل استخدامه
-                                  await JoinCommunityRepo()
-                                      .sendRequestToCommunity(
-                                    widget.community.id?.toString() ??
-                                        '', // التأكد أن id ليس null
-                                    context,
-                                  );
-
-                                  setState(() {
-                                    hasRequested =
-                                        true; // تغيير حالة الزر بعد الطلب
-                                  });
-                                }
-                              },
-                              style: ButtonStyle(
-                                elevation: WidgetStatePropertyAll(5),
-                                shadowColor:
-                                    WidgetStatePropertyAll(Colors.black),
-                                backgroundColor:
-                                    WidgetStatePropertyAll(cornflowerblue),
-                                shape: WidgetStatePropertyAll(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                                style: ButtonStyle(
+                                  elevation: WidgetStatePropertyAll(5),
+                                  shadowColor:
+                                      WidgetStatePropertyAll(Colors.black),
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(Colors.red),
+                                  shape: WidgetStatePropertyAll(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          side: BorderSide(color: Colors.red))),
                                 ),
-                                side: WidgetStatePropertyAll(
-                                    BorderSide(color: cornflowerblue)),
-                              ),
-                              child: provider.isLoading == true
-                                  ? CircularProgressIndicator() // عرض الـ loading أثناء الإرسال
-                                  : Text(
-                                      hasRequested
-                                          ? 'Cancel Request'
-                                          : 'Request',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                        fontFamily: "Poppins",
-                                      ),
-                                    ),
-                            ))
+                                onPressed: () {},
+                                child: Text(
+                                  'Leave',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20.sp,
+                                      color: white,
+                                      fontFamily: "Poppins"),
+                                ))),
                       ],
                     ),
                   );

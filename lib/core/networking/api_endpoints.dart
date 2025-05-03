@@ -26,4 +26,12 @@ class ApiEndpoints {
   // USER
   static const String userEndpoint = "user";
   static const String becomeVolunteerEndpoint = "become-volunteer";
+
+
+
+  static const String voulnteerEndpoint = "volunteer";
+
+
+
+
 }

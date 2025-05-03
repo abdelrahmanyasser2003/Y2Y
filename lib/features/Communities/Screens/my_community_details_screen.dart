@@ -1,33 +1,31 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
-import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
+import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
-import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
-import 'package:y2y/features/Communities/repo/join_community_repo.dart';
-import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
+import 'package:y2y/features/Communities/widges/listrile_my_community_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
+import 'package:y2y/features/user/screens/user_details_screen.dart';
 
-class CommunityDetails extends StatefulWidget {
-  final GetAllCommunitiesModel community;
-
-  const CommunityDetails({super.key, required this.community});
+class MyCommunityDetailsScreen extends StatefulWidget {
+  const MyCommunityDetailsScreen({super.key, required this.myCommunity});
+  final CommunitiesModellvoulnteer myCommunity;
 
   @override
-  State<CommunityDetails> createState() => _CommunityDetailsState();
+  State<MyCommunityDetailsScreen> createState() =>
+      _MyCommunityDetailsScreenState();
 }
 
-class _CommunityDetailsState extends State<CommunityDetails> {
-  late Future<UserDetailsModel> _userDetailsFuture;
-  bool hasRequested = false;
+class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
+  bool showAllRequests = false;
 
+  late Future<UserDetailsModel> _userDetailsFuture;
   @override
   void initState() {
     super.initState();
@@ -37,6 +35,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final requests = widget.myCommunity.askToJoin ?? [];
+    final displayedRequests =
+        showAllRequests ? requests : requests.take(3).toList();
+
     return Scaffold(
         backgroundColor: white,
         appBar: PreferredSize(
@@ -70,10 +72,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             CircleAvatar(
                               radius: 40,
                               backgroundImage: (widget
-                                          .community.image?.isNotEmpty ??
+                                          .myCommunity.image?.isNotEmpty ??
                                       false)
                                   ? NetworkImage(
-                                      '${ApiEndpoints.baseUrl}${widget.community.image?.replaceAll("\\", "/")}')
+                                      '${ApiEndpoints.baseUrl}${widget.myCommunity.image?.replaceAll("\\", "/")}')
                                   : AssetImage(
                                           'assets/images/default_community.png')
                                       as ImageProvider,
@@ -84,7 +86,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.community.name ?? '',
+                                    widget.myCommunity.name ?? '',
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: cornflowerblue,
@@ -94,7 +96,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    widget.community.desc ?? '',
+                                    widget.myCommunity.desc ?? '',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: cornflowerblue,
@@ -139,7 +141,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.category?.name ?? 'Unknown',
+                                widget.myCommunity.types?.first ?? 'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -165,7 +167,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.subcategory!.name ?? 'Unknown',
+                                widget.myCommunity.subcategory!.name ??
+                                    'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -189,7 +192,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 55),
                             Text(
-                              widget.community.numberOfMembers?.toString() ??
+                              widget.myCommunity.numberOfMembers?.toString() ??
                                   '0',
                               style: TextStyle(
                                 fontSize: 11,
@@ -210,7 +213,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 65),
                             Text(
-                              widget.community.location!.state ?? 'Unknown',
+                              widget.myCommunity.location!.state ?? 'Unknown',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: cornflowerblue,
@@ -254,7 +257,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.startDate!
+                                          .myCommunity.date!.startDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -270,7 +273,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.community.volunteer?.userName ?? "",
+                                  widget.myCommunity.volunteer?.userName ?? "",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: cornflowerblue,
@@ -292,7 +295,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.endDate!
+                                          .myCommunity.date!.endDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -330,7 +333,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.first ??
+                                      widget.myCommunity.date?.schedule
+                                              ?.first ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -351,7 +355,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.startAt
+                                                .myCommunity.date?.startAt
                                                 .toString() ??
                                             ''),
                                       ),
@@ -369,7 +373,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.last ??
+                                      widget.myCommunity.date?.schedule?.last ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -390,7 +394,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.finishAt
+                                                .myCommunity.date?.finishAt
                                                 .toString() ??
                                             ''),
                                       ),
@@ -422,7 +426,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.myCommunity.location?.city ?? '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -446,7 +450,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.myCommunity.location?.city ?? '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -477,7 +481,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                         ),
                         hieghtspace(hieght: 5),
                         Text(
-                          widget.community.roles ?? '',
+                          widget.myCommunity.roles ?? '',
                           style: TextStyle(
                             fontSize: 13,
                             color: cornflowerblue,
@@ -491,11 +495,12 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                           thickness: 0.5,
                         ),
                         hieghtspace(hieght: 10),
+                        // العنوان مع عدد الطلبات
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "Members :",
+                            const Text(
+                              "Requests :",
                               style: TextStyle(
                                 fontSize: 20,
                                 color: cornflowerblue,
@@ -503,128 +508,136 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 fontFamily: "Roboto",
                               ),
                             ),
-                            Text(
-                              "View all >",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: "Roboto",
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  showAllRequests = !showAllRequests;
+                                });
+                              },
+                              child: Text(
+                                showAllRequests
+                                    ? "View less"
+                                    : "View all (${widget.myCommunity.askToJoin?.length ?? 0})",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: cornflowerblue,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Roboto",
+                                ),
                               ),
                             ),
                           ],
                         ),
+
                         hieghtspace(hieght: 10),
-                        ListrileCommunityWidget(
-                          title: 'ss',
-                          onTap: () {},
-                        ),
-                        hieghtspace(hieght: 90),
-                        SizedBox(
-                            width: double.infinity,
-                            height: 55,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                if (widget.community.id == null) {
-                                  showAnimatedSnackDialog(
-                                    context,
-                                    type: AnimatedSnackBarType.error,
-                                    message:
-                                        "Community data is missing or invalid.",
-                                  );
-                                  return;
-                                }
+                        ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              const Divider(color: purple),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: displayedRequests.length,
+                          itemBuilder: (context, index) {
+                            final requests = widget.myCommunity.askToJoin ?? [];
+                            final displayedRequests = showAllRequests
+                                ? requests
+                                : requests.take(3).toList();
+                            final request = displayedRequests[index];
+                            final fullName =
+                                '${request.firstName ?? ''} ${request.lastName ?? ''}';
+                            final imageProvider = (request.profileImage !=
+                                        null &&
+                                    request.profileImage!.isNotEmpty)
+                                ? NetworkImage(request.profileImage!)
+                                : const AssetImage('assets/img/Male Avatar.png')
+                                    as ImageProvider;
 
-                                if (hasRequested) {
-                                  // عرض SnackBar لتأكيد الإلغاء مباشرة
-                                  final shouldCancel = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      backgroundColor: cornflowerblue,
-                                      title: Text(
-                                        'Are you sure you want to cancel the request?',
-                                        style: TextStyle(
-                                            color: white,
-                                            fontFamily: 'Roboto',
-                                            fontSize: 19),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: Text('NO',
-                                              style: TextStyle(
-                                                  color: white,
-                                                  fontFamily: 'Roboto')),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: Text('YES',
-                                              style: TextStyle(
-                                                  color: white,
-                                                  fontFamily: 'Roboto')),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-
-                                  if (shouldCancel == true) {
-                                    // إلغاء الطلب عبر الـ API
-                                    await CancelJoinRepo().cancelJoinRequest(
-                                      widget.community.id?.toString() ??
-                                          '', // التأكد أن id ليس null
-                                      context,
-                                    );
-
-                                    setState(() {
-                                      hasRequested =
-                                          false; // إعادة تعيين حالة الطلب
-                                    });
-                                  }
-                                } else {
-                                  // تحقق من provider.isLoading قبل استخدامه
-                                  await JoinCommunityRepo()
-                                      .sendRequestToCommunity(
-                                    widget.community.id?.toString() ??
-                                        '', // التأكد أن id ليس null
-                                    context,
-                                  );
-
-                                  setState(() {
-                                    hasRequested =
-                                        true; // تغيير حالة الزر بعد الطلب
-                                  });
-                                }
+                            return ListrileMyCommunityWidget(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        Userdetils(request: request),
+                                  ),
+                                );
                               },
-                              style: ButtonStyle(
-                                elevation: WidgetStatePropertyAll(5),
-                                shadowColor:
-                                    WidgetStatePropertyAll(Colors.black),
-                                backgroundColor:
-                                    WidgetStatePropertyAll(cornflowerblue),
-                                shape: WidgetStatePropertyAll(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                              cancelOnTap: () {},
+                              chexkOnTap: () {},
+                              backgroundImage: imageProvider,
+                              title: fullName,
+                            );
+                          },
+                        ),
+
+                        hieghtspace(hieght: 90),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                                width: 220,
+                                height: 48,
+                                child: ElvatedButtonWidget(
+                                  fontSize: 20,
+                                  text: 'View',
+                                  colorBorder: cornflowerblue,
+                                  onPressed: () {},
+                                  color: green,
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(white),
+                                )),
+                            SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  padding:
+                                      EdgeInsets.all(0), // يمنع المساحة الزايدة
+                                  backgroundColor: white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: BorderSide(color: cornflowerblue)),
+                                  elevation: 5,
+                                  shadowColor: Colors.black,
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/img/Vector.png',
+                                    width: 22, // عدل الحجم حسب ما تحب
+                                    height: 22,
+                                    fit: BoxFit.contain,
+                                    color: Colors.blue,
                                   ),
                                 ),
-                                side: WidgetStatePropertyAll(
-                                    BorderSide(color: cornflowerblue)),
                               ),
-                              child: provider.isLoading == true
-                                  ? CircularProgressIndicator() // عرض الـ loading أثناء الإرسال
-                                  : Text(
-                                      hasRequested
-                                          ? 'Cancel Request'
-                                          : 'Request',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                        fontFamily: "Poppins",
-                                      ),
-                                    ),
-                            ))
+                            ),
+                            SizedBox(
+                              width: 48,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.all(0),
+                                  backgroundColor: white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: BorderSide(color: cornflowerblue)),
+                                  elevation: 5,
+                                  shadowColor: Colors.black,
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/img/Delete.png',
+                                    width: 22,
+                                    height: 22,
+                                    fit: BoxFit.contain,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ],
                     ),
                   );

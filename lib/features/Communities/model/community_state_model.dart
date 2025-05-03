@@ -1,9 +1,9 @@
 
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 
 class CommunitiesModel {
   bool? success;
-  List<CommunitiesModell>? data;
+  List<CommunitiesModellvoulnteer>? data;
 
   CommunitiesModel({
     this.success,
@@ -15,8 +15,8 @@ class CommunitiesModel {
         success: json["success"],
         data: json["data"] == null
             ? []
-            : List<CommunitiesModell>.from(
-                json["data"]!.map((x) => CommunitiesModell.fromJson(x))),
+            : List<CommunitiesModellvoulnteer>.from(
+                json["data"]!.map((x) => CommunitiesModellvoulnteer.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

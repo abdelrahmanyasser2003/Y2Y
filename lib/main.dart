@@ -8,6 +8,8 @@ import 'package:y2y/features/Become%20a%20Volunteer/provider/become_volunteer_pr
 import 'package:y2y/features/Bottom%20Navigation%20Bar/provider/messages_provider.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/provider/notfications_provider.dart';
 import 'package:y2y/features/Communities/provider/community_provider.dart';
+import 'package:y2y/features/Communities/provider/get_all_communities_of_specific_user_provider.dart';
+import 'package:y2y/features/Communities/provider/get_all_communities_of_specific_voulnteer_provider.dart';
 import 'package:y2y/features/Communities/provider/get_all_communities_provider.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Opportunities/provider/delete_opportunity_provider.dart';
@@ -58,6 +60,10 @@ void main() {
     ChangeNotifierProvider(create: (ctx) => BecomeVolunteerProvider()),
     ChangeNotifierProvider(create: (ctx) => OpportunityDeleteProvider()),
     ChangeNotifierProvider(create: (ctx) => GetOpportunitiesOfUserProvider()),
+    ChangeNotifierProvider(
+        create: (ctx) => GetAllCommunitiesOfSpecificUserProvider()),
+    ChangeNotifierProvider(
+        create: (ctx) => GetAllCommunitiesOfSpecificVoulnteerProvider()),
   ], child: MyApp()));
 }
 

@@ -2,16 +2,17 @@ import 'package:dio/dio.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/networking/dio_helper.dart';
 import 'package:y2y/core/utils/storage_helper.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 
-class GetAllCommunitiesRepo {
-  Future<List<GetAllCommunitiesModel>> getAllCommunities() async {
+class GetAllCommunitiesSpecificVoulnteerRepo {
+  Future<List<CommunitiesModellvoulnteer>> getAllCommunitiesgetOfSpecificVoulnteer() async {
     try {
       final token = await StorageHelper().getToken();
       print('🪪 التوكن اللي هيتبعت: Bearer $token');
 
       final response = await DioHelper().getRequest(
-        endPoint: ApiEndpoints.getALLCommunitiesEndpoint,
+        endPoint:
+            '${ApiEndpoints.getALLCommunitiesEndpoint}/${ApiEndpoints.voulnteerEndpoint}',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -22,7 +23,7 @@ class GetAllCommunitiesRepo {
       print('📥 Response Data: ${response.data}');
 
       final allCommunities = (response.data['data'] as List)
-          .map((e) => GetAllCommunitiesModel.fromJson(e))
+          .map((e) => CommunitiesModellvoulnteer.fromJson(e))
           .toList();
 
       return allCommunities;

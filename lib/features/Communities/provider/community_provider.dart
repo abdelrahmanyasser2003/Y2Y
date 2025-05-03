@@ -1,44 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:y2y/features/Communities/model/community_model.dart';
-
+import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
 
 class CommunityProvider with ChangeNotifier {
-  final List<CommunityModel> _joinedCommunities = [];
+  final List<GetAllCommunitiesModel> _joinedCommunities = [];
 
-  final List<CommunityModel> availableCommunities = [
-    CommunityModel(
-        imagepath: "assets/img/ai.jpg",
-        chip: "Ai",
-        subtitle: "Stay updated on tech trends and AI developments",
-        title: "Tech Innovators"),
-    CommunityModel(
-        imagepath: "assets/img/leader.jpg",
-        chip: "Leadership",
-        subtitle: "A community for leadership and academic growth",
-        title: "Student Leaders"),
-    CommunityModel(
-        imagepath: "assets/img/design.jpg",
-        chip: "UI/UX Design",
-        subtitle: "Connect with fellow graphic and UI/UX designers",
-        title: "Design Creatives"),
-    CommunityModel(
-        imagepath: "assets/img/prog.jpg",
-        chip: "Programming",
-        subtitle: "A space for aspiring developers to share knowledge",
-        title: "Programming Gurus"),
-  ];
+  final List<GetAllCommunitiesModel> availableCommunities = [];
 
-  List<CommunityModel> get joinedCommunities => _joinedCommunities;
+  List<GetAllCommunitiesModel> get joinedCommunities => _joinedCommunities;
 
-  void joinCommunity(CommunityModel community) {
+  void joinCommunity(GetAllCommunitiesModel community) {
     if (!_joinedCommunities.contains(community)) {
       _joinedCommunities.add(community);
       notifyListeners();
     }
   }
-   void leaveCommunity(CommunityModel community) {
+
+  void leaveCommunity(CommunityModel community) {
     _joinedCommunities.remove(community);
     notifyListeners();
   }
-
 }

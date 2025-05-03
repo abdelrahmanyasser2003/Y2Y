@@ -10,7 +10,8 @@ class GetAllCommunitiesOfSpecificSubcategory {
       print('🪪 التوكن اللي هيتبعت: Bearer $token');
 
       final response = await DioHelper().getRequest(
-        endPoint: "${ApiEndpoints.getALLCommunitiesEndpoint}/$subcategoryId",
+        endPoint:
+            "${ApiEndpoints.getALLCommunitiesEndpoint}/${ApiEndpoints.getAllSubCategoriesEndpoint}/$subcategoryId",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

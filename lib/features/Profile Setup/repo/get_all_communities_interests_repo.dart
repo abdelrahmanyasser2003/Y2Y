@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/networking/dio_helper.dart';
 import 'package:y2y/core/utils/storage_helper.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 
 class GetAllCommunitiesInterestsRepo {
-  Future<List<CommunitiesModell>> getAllCommunitiesInterests() async {
+  Future<List<CommunitiesModellvoulnteer>> getAllCommunitiesInterests() async {
     try {
       final token = await StorageHelper().getToken();
       print('🪪 التوكن اللي هيتبعت: Bearer $token');
@@ -23,7 +23,7 @@ class GetAllCommunitiesInterestsRepo {
       print('📥 Response Data: ${response.data}');
 
       final allCommunities = (response.data['data'] as List)
-          .map((e) => CommunitiesModell.fromJson(e))
+          .map((e) => CommunitiesModellvoulnteer.fromJson(e))
           .toList();
 
       return allCommunities;

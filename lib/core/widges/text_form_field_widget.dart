@@ -13,13 +13,17 @@ class TextFormFieldWidget extends StatelessWidget {
     this.hintText,
     this.validator,
     this.suffixIcon,
+    this.colorBord,
     this.obscureText,
     this.keyboardType,
     this.maxLength,
     this.maxLines,
+    this.fillColor,
     this.textInputAction,
   });
   final String? hintText;
+  final Color? fillColor;
+  final Color? colorBord;
   final double? width;
   final double? height;
   final Color? colors;
@@ -57,11 +61,11 @@ class TextFormFieldWidget extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
-              color: Colors.grey,
+              color: colorBord ?? Colors.grey,
             ),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: fillColor ?? Colors.white,
           contentPadding: EdgeInsets.all(8.w),
           suffixIcon: suffixIcon,
           suffixIconColor: Colors.black,

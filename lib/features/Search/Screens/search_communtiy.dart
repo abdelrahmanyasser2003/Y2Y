@@ -146,7 +146,7 @@ class _SearchCommuntiyState extends State<SearchCommuntiy> {
                             MaterialPageRoute(
                               builder: (context) => CommunityDetails(
                                   community:
-                                      CommunitiesModell.fromJson(community)),
+                                      GetAllCommunitiesModel.fromJson(community)),
                             ),
                           );
                         },
@@ -226,7 +226,7 @@ class _SearchCommuntiyState extends State<SearchCommuntiy> {
                                                 builder: (context) =>
                                                     CommunityDetails(
                                                         community:
-                                                            CommunitiesModell
+                                                            GetAllCommunitiesModel
                                                                 .fromJson(
                                                                     community)),
                                               ),

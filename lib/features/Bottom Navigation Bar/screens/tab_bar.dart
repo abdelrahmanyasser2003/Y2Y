@@ -87,12 +87,9 @@ class HomepagecontentState extends State<Homepagecontent>
           ],
         ),
       ),
-      body: TabBarView(controller: _tabController, children: [
-        Communities(
-          communityy: Provider.of<CommunityProvider>(context).joinedCommunities,
-        ),
-        Opportunities()
-      ]),
+      body: TabBarView(
+          controller: _tabController,
+          children: [Communities(), Opportunities()]),
     );
   }
 }

@@ -7,11 +7,14 @@ import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/core/widges/title_and_back_widget.dart';
 import 'package:y2y/features/Authentication/Screens/log_in_screen.dart';
 import 'package:y2y/features/Settings/provider/logput_provider.dart';
+import 'package:y2y/features/Settings/screens/change_password_settings.dart';
 import 'package:y2y/features/Settings/screens/faqs_screen.dart';
 import 'package:y2y/features/Settings/screens/privacy_policy_screen.dart';
 import 'package:y2y/features/Settings/screens/send_feedback_screen.dart';
 import 'package:y2y/features/Settings/screens/terms_of_use_screen.dart';
 import 'package:y2y/features/Settings/widges/list_tile_setting_widget.dart';
+import 'package:y2y/features/user/screens/edit_profile_screen.dart';
+import 'package:y2y/features/user/screens/profile_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -51,6 +54,12 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               hieghtspace(hieght: 10),
               ListTileSettingWidget(
+                onTap: () {
+                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Profilepage()));
+                },
                 title: 'Profile Information',
                 subTitle: 'Email Address, Phone Number, etc...',
                 trailing: Icon(Icons.arrow_forward_ios, color: cornflowerblue),
@@ -58,6 +67,12 @@ class _SettingScreenState extends State<SettingScreen> {
                 backgroundColor: Color(0xffA6D6FF),
               ),
               ListTileSettingWidget(
+                onTap: () {
+                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChangePasswordSettings()));
+                },
                 title: 'Change Password',
                 subTitle: 'Change your current password',
                 trailing: Icon(Icons.arrow_forward_ios, color: cornflowerblue),

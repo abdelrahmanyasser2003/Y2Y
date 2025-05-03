@@ -19,6 +19,7 @@ class EditProfileScreen extends StatefulWidget {
   final String skill;
   final String imgpath;
   final String name;
+  final String phone;
   final String subname;
   final String bio;
   final String gender;
@@ -31,6 +32,7 @@ class EditProfileScreen extends StatefulWidget {
     super.key,
     required this.education,
     required this.skill,
+    required this.phone,
     required this.bio,
     required this.imgpath,
     required this.name,
@@ -53,6 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController genderController;
   late TextEditingController dateController;
   late TextEditingController stateController;
+  late TextEditingController phoneController;
   late TextEditingController streetController;
   late TextEditingController cityController;
   late TextEditingController bioController;
@@ -108,6 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     genderController = TextEditingController(text: widget.gender);
     dateController = TextEditingController(text: widget.dateOfBirth);
     stateController = TextEditingController(text: widget.state);
+    phoneController = TextEditingController(text: widget.phone);
     streetController = TextEditingController(text: widget.street);
     cityController = TextEditingController(text: widget.city);
     bioController = TextEditingController(text: widget.bio);
@@ -126,6 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     bioController.dispose();
     educationController.dispose();
     skillController.dispose();
+    phoneController.dispose();
     subnameController.dispose();
     super.dispose();
   }
@@ -511,6 +516,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               colors: cornflowerblue,
               width: double.infinity,
               controller: skillController,
+            ),
+            hieghtspace(hieght: 20),
+            Text("Phone Number", style: AppStyles().monwhite16w600style),
+            hieghtspace(hieght: 10),
+            TextFormFieldWidget(
+              colors: cornflowerblue,
+              width: double.infinity,
+              controller: phoneController,
             ),
             hieghtspace(hieght: 30),
 
