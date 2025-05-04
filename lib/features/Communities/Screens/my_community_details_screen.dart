@@ -7,6 +7,7 @@ import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
+import 'package:y2y/features/Communities/provider/handle_join_request_provider.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_my_community_widget.dart';
@@ -537,6 +538,9 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: displayedRequests.length,
                           itemBuilder: (context, index) {
+                            final providerr =
+                                Provider.of<HandleJoinRequestProvider>(context,
+                                    listen: false);
                             final requests = widget.myCommunity.askToJoin ?? [];
                             final displayedRequests = showAllRequests
                                 ? requests
@@ -550,7 +554,6 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                 ? NetworkImage(request.profileImage!)
                                 : const AssetImage('assets/img/Male Avatar.png')
                                     as ImageProvider;
-
                             return ListrileMyCommunityWidget(
                               onTap: () {
                                 Navigator.push(
@@ -561,8 +564,32 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                   ),
                                 );
                               },
-                              cancelOnTap: () {},
-                              chexkOnTap: () {},
+                              cancelOnTap: () async {
+                                // final success =
+                                //     await providerr.handleJoinRequest(
+                                //   communityId: widget.myCommunity.id ?? '',
+                                //   userId: request.id ?? '',
+                                //   status: 'rejected',
+                                // );
+                                // if (success) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(content: Text('تم رفض الطلب')),
+                                //   );
+                                // }
+                              },
+                              chexkOnTap: () async {
+                                // final success =
+                                //     await providerr.handleJoinRequest(
+                                //   communityId: widget.myCommunity.id ?? '',
+                                //   userId: request.id,
+                                //   status: 'accepted',
+                                // );
+                                // if (success) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(content: Text('تم قبول الطلب')),
+                                //   );
+                                // }
+                              },
                               backgroundImage: imageProvider,
                               title: fullName,
                             );

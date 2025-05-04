@@ -1,13 +1,17 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
+import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Bottom%20Navigation%20Bar/screens/home_screen.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
+import 'package:y2y/features/Communities/provider/leave_community_provider.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
@@ -550,37 +554,130 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
 
                             return ListrileCommunityWidget(
                               title: "",
-                              onTap: () {},
+                              onTap: () {
+                                // Navigator.push(context, MaterialPageRoute(builder: (context)=))
+                              },
                             );
                           },
                         ),
 
                         hieghtspace(hieght: 90),
                         SizedBox(
-                            width: double.infinity,
-                            height: 60,
-                            child: ElevatedButton(
-                                style: ButtonStyle(
-                                  elevation: WidgetStatePropertyAll(5),
-                                  shadowColor:
-                                      WidgetStatePropertyAll(Colors.black),
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(Colors.red),
-                                  shape: WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          side: BorderSide(color: Colors.red))),
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              elevation: WidgetStatePropertyAll(5),
+                              shadowColor: WidgetStatePropertyAll(Colors.black),
+                              backgroundColor:
+                                  WidgetStatePropertyAll(Colors.red),
+                              shape: WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(color: Colors.red),
                                 ),
-                                onPressed: () {},
-                                child: Text(
-                                  'Leave',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20.sp,
-                                      color: white,
-                                      fontFamily: "Poppins"),
-                                ))),
+                              ),
+                            ),
+                            onPressed: () async {
+                              // إظهار Dialog لتأكيد عملية المغادرة
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: cornflowerblue,
+                                  title: Text(
+                                    "Confirm Leave",
+                                    style: TextStyle(
+                                        color: white,
+                                        fontFamily: 'Roboto',
+                                        fontSize: 23),
+                                  ),
+                                  content: Text(
+                                    "Are you sure you want to leave the community?",
+                                    style: TextStyle(
+                                        color: white,
+                                        fontFamily: 'Roboto',
+                                        fontSize: 16),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context); // إغلاق ال Dialog إذا ضغط المستخدم على "Cancel"
+                                      },
+                                      child: Text("Cancel",
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto')),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Homepage())); // إغلاق ال Dialog بعد الضغط على "Yes"
+
+                                        final leaveProvider =
+                                            Provider.of<LeaveCommunityProvider>(
+                                                context,
+                                                listen: false);
+                                        bool success =
+                                            await leaveProvider.leaveCommunity(
+                                                widget.joinedCommunity.id ??
+                                                    '');
+
+                                        if (success) {
+                                          showAnimatedSnackDialog(
+                                            context,
+                                            message:
+                                                'You have left the community successfully',
+                                            type: AnimatedSnackBarType.success,
+                                          );
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Homepage()),
+                                          );
+                                        } else {
+                                          // فشل المغادرة
+                                          showAnimatedSnackDialog(
+                                            context,
+                                            message:
+                                                'Failed to leave the community',
+                                            type: AnimatedSnackBarType.error,
+                                          );
+                                        }
+                                      },
+                                      child: Text("Yes",
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto')),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Consumer<LeaveCommunityProvider>(
+                              builder: (context, provider, child) {
+                                return provider.isLoading
+                                    ? CircularProgressIndicator(
+                                        color: white,
+                                      ) // عرض دائرة التحميل أثناء الانتظار
+                                    : Text(
+                                        'Leave',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 20.sp,
+                                          color: white,
+                                          fontFamily: "Poppins",
+                                        ),
+                                      );
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   );

@@ -41,6 +41,7 @@ class _CommunitiesState extends State<Communities> {
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// 🔹 عرض المجتمعات التي يديرها المستخدم فقط إذا لم تكن فارغة
               Consumer<GetAllCommunitiesOfSpecificVoulnteerProvider>(
@@ -54,7 +55,7 @@ class _CommunitiesState extends State<Communities> {
                   }
 
                   if (managedCommunities.isEmpty) {
-                    return const SizedBox(); // سكشن مخفي إذا فاضي
+                    return const SizedBox(); // ما يظهرش أي شيء لو فاضي
                   }
 
                   return Column(
@@ -102,12 +103,14 @@ class _CommunitiesState extends State<Communities> {
                           ),
                         );
                       }).toList(),
+                      hieghtspace(hieght: 10),
+                      Divider(color: white, thickness: 0.5),
                     ],
                   );
                 },
               ),
 
-              hieghtspace(hieght: 30),
+              hieghtspace(hieght: 10),
               Consumer<GetAllCommunitiesOfSpecificUserProvider>(
                 builder: (context, provider, child) {
                   final joinedCommunities = provider.communities;
@@ -189,19 +192,24 @@ class _CommunitiesState extends State<Communities> {
                 },
               ),
 
-              hieghtspace(hieght: 20),
+              hieghtspace(hieght: 10),
               Divider(color: white, thickness: 0.5),
-              hieghtspace(hieght: 20),
+              hieghtspace(hieght: 10),
 
               /// 🔹 المجتمعات المقترحة
-              Text(
-                "Explore More Communities",
-                style: TextStyle(
-                  color: white,
-                  fontFamily: "Montserrat",
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Explore More Communities",
+                    style: TextStyle(
+                      color: white,
+                      fontFamily: "Montserrat",
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Consumer<CommunitiesProvider>(

@@ -22,16 +22,12 @@ class ApiEndpoints {
   static const String getALLCommunitiesEndpoint = "community";
   static const String joinRequestCommuntiyCommunitiesEndpoint = "join-request";
   static const String cancelJoinCommuntiyCommunitiesEndpoint = "cancel-join";
+  static const String handleJoinRequestEndpoint = "handle-request";
+  static const String leaveCommuntiyEndpoint = "leave-community";
 
   // USER
   static const String userEndpoint = "user";
   static const String becomeVolunteerEndpoint = "become-volunteer";
 
-
-
   static const String voulnteerEndpoint = "volunteer";
-
-
-
-
 }
