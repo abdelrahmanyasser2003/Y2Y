@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_user_model.dart';
+
 import 'package:y2y/features/Communities/repo/get_all_communities_specific_user_repo.dart';
 
 class GetAllCommunitiesOfSpecificUserProvider with ChangeNotifier{
     final GetAllCommunitiesSpecificUserRepo _repository =
       GetAllCommunitiesSpecificUserRepo(); // استبدل بالاسم الصحيح
 
-  List<CommunitiesModellvoulnteer> _communities = [];
+  List<GetAllCommunitiesUserModel> _communities = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<CommunitiesModellvoulnteer> get communities => _communities;
+  List<GetAllCommunitiesUserModel> get communities => _communities;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 

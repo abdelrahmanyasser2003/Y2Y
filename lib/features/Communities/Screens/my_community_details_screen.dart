@@ -1,12 +1,16 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
+import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Communities/Screens/edit_community_screen.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
+import 'package:y2y/features/Communities/provider/delete_community_provider.dart';
 import 'package:y2y/features/Communities/provider/handle_join_request_provider.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
@@ -25,6 +29,7 @@ class MyCommunityDetailsScreen extends StatefulWidget {
 
 class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
   bool showAllRequests = false;
+  final dateFormat = DateFormat('yyyy-MM-dd');
 
   late Future<UserDetailsModel> _userDetailsFuture;
   @override
@@ -38,7 +43,7 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
   Widget build(BuildContext context) {
     final requests = widget.myCommunity.askToJoin ?? [];
     final displayedRequests =
-        showAllRequests ? requests : requests.take(3).toList();
+        showAllRequests ? requests : requests.take(2).toList();
 
     return Scaffold(
         backgroundColor: white,
@@ -142,7 +147,7 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.myCommunity.types?.first ?? 'Unknown',
+                                widget.myCommunity.category?.name ?? 'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -356,7 +361,7 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .myCommunity.date?.startAt
+                                                .myCommunity.date?.startDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -395,7 +400,7 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .myCommunity.date?.finishAt
+                                                .myCommunity.date?.endDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -548,12 +553,7 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                             final request = displayedRequests[index];
                             final fullName =
                                 '${request.firstName ?? ''} ${request.lastName ?? ''}';
-                            final imageProvider = (request.profileImage !=
-                                        null &&
-                                    request.profileImage!.isNotEmpty)
-                                ? NetworkImage(request.profileImage!)
-                                : const AssetImage('assets/img/Male Avatar.png')
-                                    as ImageProvider;
+
                             return ListrileMyCommunityWidget(
                               onTap: () {
                                 Navigator.push(
@@ -565,32 +565,36 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                                 );
                               },
                               cancelOnTap: () async {
-                                // final success =
-                                //     await providerr.handleJoinRequest(
-                                //   communityId: widget.myCommunity.id ?? '',
-                                //   userId: request.id ?? '',
-                                //   status: 'rejected',
-                                // );
-                                // if (success) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(content: Text('تم رفض الطلب')),
-                                //   );
-                                // }
+                                final success =
+                                    await providerr.handleJoinRequest(
+                                  communityId: widget.myCommunity.id ?? '',
+                                  userId: request.id ?? '',
+                                  status: 'rejected',
+                                );
+                                if (success) {
+                                  showAnimatedSnackDialog(
+                                    context,
+                                    message: 'The request was rejected',
+                                    type: AnimatedSnackBarType.success,
+                                  );
+                                }
                               },
                               chexkOnTap: () async {
-                                // final success =
-                                //     await providerr.handleJoinRequest(
-                                //   communityId: widget.myCommunity.id ?? '',
-                                //   userId: request.id,
-                                //   status: 'accepted',
-                                // );
-                                // if (success) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(content: Text('تم قبول الطلب')),
-                                //   );
-                                // }
+                                final success =
+                                    await providerr.handleJoinRequest(
+                                  communityId: widget.myCommunity.id ?? '',
+                                  userId: request.id ?? '',
+                                  status: 'accepted',
+                                );
+                                if (success) {
+                                  showAnimatedSnackDialog(
+                                    context,
+                                    message: 'The request has been accepted',
+                                    type: AnimatedSnackBarType.success,
+                                  );
+                                }
                               },
-                              backgroundImage: imageProvider,
+                              backgroundImage: AssetImage(''),
                               title: fullName,
                             );
                           },
@@ -616,7 +620,35 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                               width: 48,
                               height: 48,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditCommunityScreen(
+                                              imgPath:
+                                                  widget.myCommunity.image ??
+                                                      "",
+                                              meeting: widget.myCommunity.date!
+                                                  .schedule!.first
+                                                  .toString(),
+                                              enddate: dateFormat.format(widget
+                                                  .myCommunity.date!.endDate!),
+                                              startdate: dateFormat.format(
+                                                  widget.myCommunity.date!
+                                                      .startDate!),
+                                              desc:
+                                                  widget.myCommunity.desc ?? "",
+                                              title:
+                                                  widget.myCommunity.name ?? '',
+                                              rules: widget.myCommunity.roles ??
+                                                  "",
+                                              location: widget.myCommunity
+                                                      .location?.state ??
+                                                  "",
+                                            )),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding:
                                       EdgeInsets.all(0), // يمنع المساحة الزايدة
@@ -642,7 +674,86 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                               width: 48,
                               height: 48,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: cornflowerblue,
+                                        title: Text(
+                                          'Confirm Deletion',
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto',
+                                              fontSize: 23),
+                                        ),
+                                        content: Text(
+                                          'Are you sure you want to delete this community?',
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto',
+                                              fontSize: 16),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text('Cancel',
+                                                style: TextStyle(
+                                                    color: white,
+                                                    fontFamily: 'Roboto')),
+                                            onPressed: () {
+                                              Navigator.pop(
+                                                  context); // إغلاق الـ Dialog
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text('Delete',
+                                                style: TextStyle(
+                                                    color: white,
+                                                    fontFamily: 'Roboto')),
+                                            onPressed: () async {
+                                              Navigator.pop(
+                                                  context); // إغلاق الـ Dialog قبل بدء الحذف
+
+                                              final communityDeleteProvider =
+                                                  Provider.of<
+                                                          DeleteCommunityProvider>(
+                                                      context,
+                                                      listen: false);
+
+                                              String communityId =
+                                                  widget.myCommunity.id ?? "";
+
+                                              await communityDeleteProvider
+                                                  .deleteCommunity(communityId);
+
+                                              if (communityDeleteProvider
+                                                  .isDeleted) {
+                                                showAnimatedSnackDialog(
+                                                  context,
+                                                  message:
+                                                      'Community deleted successfully.',
+                                                  type: AnimatedSnackBarType
+                                                      .success,
+                                                );
+
+                                                Navigator.pop(
+                                                    context); // الرجوع للشاشة السابقة بعد الحذف
+                                              } else {
+                                                showAnimatedSnackDialog(
+                                                  context,
+                                                  message:
+                                                      'Failed to delete Community.',
+                                                  type: AnimatedSnackBarType
+                                                      .error,
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.all(0),
                                   backgroundColor: white,

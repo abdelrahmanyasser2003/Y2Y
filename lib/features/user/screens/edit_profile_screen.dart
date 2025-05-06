@@ -374,11 +374,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Text("Gender", style: AppStyles().monwhite16w600style),
                     hieghtspace(hieght: 5),
                     Container(
-                      width: 175.w,
-                      height: 40.h,
+                      width: 155,
                       decoration: BoxDecoration(
-                          color: white,
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: white),
                       child: DropdownButton(
                         isExpanded: true,
                         icon: const Icon(
@@ -386,15 +385,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           color: cornflowerblue,
                         ),
                         style: const TextStyle(
-                            fontFamily: "Lato",
                             color: cornflowerblue,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: "Lato"),
                         dropdownColor: white,
                         value: dropdwonvalue,
-                        items: _dropdowngender.map((state) {
+                        items: _dropdowngender.map((gender) {
                           return DropdownMenuItem(
-                            value: state,
-                            child: Text(state),
+                            value: gender,
+                            child: Text(gender),
                           );
                         }).toList(),
                         onChanged: (value) {

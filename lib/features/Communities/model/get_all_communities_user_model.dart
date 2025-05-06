@@ -3,8 +3,7 @@
 //     final communitiesModel = communitiesModelFromJson(jsonString);
 
 
-
-class CommunitiesModellvoulnteer {
+class GetAllCommunitiesUserModel {
     String? id;
     String? name;
     String? slug;
@@ -22,14 +21,14 @@ class CommunitiesModellvoulnteer {
     Date? date;
     String? createdBy;
     String? updatedBy;
-    List<AskToJoin>? askToJoin;
+    List<String>? askToJoin;
     DateTime? createdAt;
     DateTime? updatedAt;
     int? v;
     int? numberOfMembers;
     String? datumId;
 
-    CommunitiesModellvoulnteer({
+    GetAllCommunitiesUserModel({
         this.id,
         this.name,
         this.slug,
@@ -55,7 +54,7 @@ class CommunitiesModellvoulnteer {
         this.datumId,
     });
 
-    factory CommunitiesModellvoulnteer.fromJson(Map<String, dynamic> json) => CommunitiesModellvoulnteer(
+    factory GetAllCommunitiesUserModel.fromJson(Map<String, dynamic> json) => GetAllCommunitiesUserModel(
         id: json["_id"],
         name: json["name"],
         slug: json["slug"],
@@ -73,7 +72,7 @@ class CommunitiesModellvoulnteer {
         date: json["date"] == null ? null : Date.fromJson(json["date"]),
         createdBy: json["createdBy"],
         updatedBy: json["updatedBy"],
-        askToJoin: json["askTOJoin"] == null ? [] : List<AskToJoin>.from(json["askTOJoin"]!.map((x) => AskToJoin.fromJson(x))),
+        askToJoin: json["askTOJoin"] == null ? [] : List<String>.from(json["askTOJoin"]!.map((x) => x)),
         createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
         updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
@@ -99,88 +98,12 @@ class CommunitiesModellvoulnteer {
         "date": date?.toJson(),
         "createdBy": createdBy,
         "updatedBy": updatedBy,
-        "askTOJoin": askToJoin == null ? [] : List<dynamic>.from(askToJoin!.map((x) => x.toJson())),
+        "askTOJoin": askToJoin == null ? [] : List<dynamic>.from(askToJoin!.map((x) => x)),
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
         "numberOfMembers": numberOfMembers,
         "id": datumId,
-    };
-}
-
-class AskToJoin {
-    String? id;
-    String? firstName;
-    String? lastName;
-    String? email;
-    Location? address;
-    String? phone;
-    String? gender;
-    String? roles;
-    List<dynamic>? interested;
-    List<dynamic>? skills;
-
-    AskToJoin({
-        this.id,
-        this.firstName,
-        this.lastName,
-        this.email,
-        this.address,
-        this.phone,
-        this.gender,
-        this.roles,
-        this.interested,
-        this.skills,
-    });
-
-    factory AskToJoin.fromJson(Map<String, dynamic> json) => AskToJoin(
-        id: json["_id"],
-        firstName: json["firstName"],
-        lastName: json["lastName"],
-        email: json["email"],
-        address: json["address"] == null ? null : Location.fromJson(json["address"]),
-        phone: json["phone"],
-        gender: json["gender"],
-        roles: json["roles"],
-        interested: json["interested"] == null ? [] : List<dynamic>.from(json["interested"]!.map((x) => x)),
-        skills: json["skills"] == null ? [] : List<dynamic>.from(json["skills"]!.map((x) => x)),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "_id": id,
-        "firstName": firstName,
-        "lastName": lastName,
-        "email": email,
-        "address": address?.toJson(),
-        "phone": phone,
-        "gender": gender,
-        "roles": roles,
-        "interested": interested == null ? [] : List<dynamic>.from(interested!.map((x) => x)),
-        "skills": skills == null ? [] : List<dynamic>.from(skills!.map((x) => x)),
-    };
-}
-
-class Location {
-    String? state;
-    String? city;
-    String? street;
-
-    Location({
-        this.state,
-        this.city,
-        this.street,
-    });
-
-    factory Location.fromJson(Map<String, dynamic> json) => Location(
-        state: json["state"],
-        city: json["city"],
-        street: json["street"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "state": state,
-        "city": city,
-        "street": street,
     };
 }
 
@@ -244,6 +167,30 @@ class Date {
     };
 }
 
+class Location {
+    String? state;
+    String? city;
+    String? street;
+
+    Location({
+        this.state,
+        this.city,
+        this.street,
+    });
+
+    factory Location.fromJson(Map<String, dynamic> json) => Location(
+        state: json["state"],
+        city: json["city"],
+        street: json["street"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "state": state,
+        "city": city,
+        "street": street,
+    };
+}
+
 class Volunteer {
     String? id;
     String? firstName;
@@ -254,9 +201,9 @@ class Volunteer {
     String? gender;
     String? roles;
     List<String>? interested;
-    List<String>? skills;
     String? profileImage;
     String? userName;
+    List<String>? skills;
     String? education;
     DateTime? bd;
     String? bio;
@@ -271,9 +218,9 @@ class Volunteer {
         this.gender,
         this.roles,
         this.interested,
-        this.skills,
         this.profileImage,
         this.userName,
+        this.skills,
         this.education,
         this.bd,
         this.bio,
@@ -289,9 +236,9 @@ class Volunteer {
         gender: json["gender"],
         roles: json["roles"],
         interested: json["interested"] == null ? [] : List<String>.from(json["interested"]!.map((x) => x)),
-        skills: json["skills"] == null ? [] : List<String>.from(json["skills"]!.map((x) => x)),
         profileImage: json["profileImage"],
         userName: json["userName"],
+        skills: json["skills"] == null ? [] : List<String>.from(json["skills"]!.map((x) => x)),
         education: json["education"],
         bd: json["BD"] == null ? null : DateTime.parse(json["BD"]),
         bio: json["bio"],
@@ -307,9 +254,9 @@ class Volunteer {
         "gender": gender,
         "roles": roles,
         "interested": interested == null ? [] : List<dynamic>.from(interested!.map((x) => x)),
-        "skills": skills == null ? [] : List<dynamic>.from(skills!.map((x) => x)),
         "profileImage": profileImage,
         "userName": userName,
+        "skills": skills == null ? [] : List<dynamic>.from(skills!.map((x) => x)),
         "education": education,
         "BD": bd?.toIso8601String(),
         "bio": bio,

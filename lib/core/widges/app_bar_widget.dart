@@ -3,7 +3,6 @@ import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/features/Search/Screens/search_screen.dart';
 import 'package:y2y/features/Settings/screens/settings_overview_screen.dart';
 
-
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({super.key});
 

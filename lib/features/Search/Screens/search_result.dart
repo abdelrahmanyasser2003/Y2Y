@@ -137,7 +137,7 @@ class _SearchResultState extends State<SearchResult> {
                                 itemCount: provider.subcategories.length,
                                 itemBuilder: (context, index) {
                                   final item = provider.subcategories[index];
-                                  final name = item['name'] ?? '';
+                                  final name = item.name;
 
                                   // فلترة حسب البحث (لو عايزها ديناميكيًا)
                                   if (!_searchController.text
@@ -150,8 +150,8 @@ class _SearchResultState extends State<SearchResult> {
                                   return GestureDetector(
                                     onTap: () {
                                       // التحقق إذا كانت القيمة موجودة أو لا
-                                      final subcategoryId = item['_id'] ??
-                                          ''; // استخدم قيمة افتراضية إذا كانت null
+                                      final subcategoryId = item
+                                          .id; // استخدم قيمة افتراضية إذا كانت null
 
                                       // إذا كانت القيمة فارغة أو null، يمكن إظهار رسالة خطأ أو التعامل معها بشكل آخر
                                       if (subcategoryId.isEmpty) {

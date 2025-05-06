@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 
-class ListrileCommunityWidget extends StatelessWidget {
-  const ListrileCommunityWidget(
-      {super.key, required this.title, required this.onTap,required this.backgroundImage});
+class ListtileVolunteerWidget extends StatelessWidget {
+  const ListtileVolunteerWidget(
+      {super.key,
+      required this.title,
+      required this.onTap,
+      required this.backgroundImage});
   final String title;
-  final void Function()? onTap;
   final ImageProvider<Object>? backgroundImage;
+
+  final void Function()? onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,6 +28,14 @@ class ListrileCommunityWidget extends StatelessWidget {
                 fontSize: 15,
                 fontFamily: 'Montserrat',
                 fontWeight: FontWeight.w700),
+          ),
+          subtitle: Text(
+            'Volunteer (Admin)',
+            style: TextStyle(
+                color: cornflowerblue,
+                fontSize: 10,
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400),
           ),
           leading: CircleAvatar(
             backgroundImage: backgroundImage,

@@ -317,31 +317,81 @@ class _MyOpportunityScreenState extends State<MyOpportunityScreen> {
                         height: 48,
                         child: ElevatedButton(
                           onPressed: () async {
-                            // استدعاء الـ Provider لحذف الفرصة
-                            final opportunityDeleteProvider =
-                                Provider.of<OpportunityDeleteProvider>(context,
-                                    listen: false);
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor: cornflowerblue,
+                                  title: Text(
+                                    'Confirm Deletion',
+                                    style: TextStyle(
+                                        color: white,
+                                        fontFamily: 'Roboto',
+                                        fontSize: 23),
+                                  ),
+                                  content: Text(
+                                    'Are you sure you want to delete this opportunity ?',
+                                    style: TextStyle(
+                                        color: white,
+                                        fontFamily: 'Roboto',
+                                        fontSize: 16),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Cancel',
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto')),
+                                      onPressed: () {
+                                        Navigator.pop(
+                                            context); // إغلاق الـ Dialog
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('Delete',
+                                          style: TextStyle(
+                                              color: white,
+                                              fontFamily: 'Roboto')),
+                                      onPressed: () async {
+                                        Navigator.pop(
+                                            context); // إغلاق الـ Dialog قبل الحذف
 
-                            // افترض أن لديك `opportunityId` و `token`
-                            String opportunityId = widget.myOpportunity.id ??
-                                ""; // استبدل بـ ID الفرصة
+                                        final opportunityDeleteProvider =
+                                            Provider.of<
+                                                    OpportunityDeleteProvider>(
+                                                context,
+                                                listen: false);
 
-                            // قم بحذف الفرصة
-                            await opportunityDeleteProvider
-                                .deleteOpportunity(opportunityId);
+                                        String opportunityId =
+                                            widget.myOpportunity.id ?? "";
 
-                            // تحقق من حالة الحذف
-                            if (opportunityDeleteProvider.isDeleted) {
-                              showAnimatedSnackDialog(context,
-                                  message: 'Opportunity deleted successfully.',
-                                  type: AnimatedSnackBarType.success);
+                                        await opportunityDeleteProvider
+                                            .deleteOpportunity(opportunityId);
 
-                              Navigator.pop(context);
-                            } else {
-                              showAnimatedSnackDialog(context,
-                                  message: 'Failed to delete opportunity.',
-                                  type: AnimatedSnackBarType.error);
-                            }
+                                        if (opportunityDeleteProvider
+                                            .isDeleted) {
+                                          showAnimatedSnackDialog(
+                                            context,
+                                            message:
+                                                'opportunity deleted successfully.',
+                                            type: AnimatedSnackBarType.success,
+                                          );
+                                          Navigator.pop(
+                                              context); // الرجوع للشاشة السابقة
+                                        } else {
+                                          showAnimatedSnackDialog(
+                                            context,
+                                            message:
+                                                'Failed to delete opportunity.',
+                                            type: AnimatedSnackBarType.error,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(0),

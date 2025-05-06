@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:y2y/core/styling/app_styles.dart';
 
 class TextFormFieldWidget extends StatelessWidget {
-  const TextFormFieldWidget({
+  TextFormFieldWidget({
     super.key,
     this.width,
     this.height,
@@ -17,7 +17,9 @@ class TextFormFieldWidget extends StatelessWidget {
     this.obscureText,
     this.keyboardType,
     this.maxLength,
+    this.onTap,
     this.maxLines,
+    this.readOnly,
     this.fillColor,
     this.textInputAction,
   });
@@ -27,6 +29,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final double? width;
   final double? height;
   final Color? colors;
+  bool? readOnly = false;
   final void Function(String)? onChanged;
   final TextEditingController? controller;
   final Widget? suffixIcon;
@@ -35,6 +38,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final TextInputAction? textInputAction;
   final int? maxLength;
   final int? maxLines;
+  final void Function()? onTap;
   final String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
@@ -42,6 +46,7 @@ class TextFormFieldWidget extends StatelessWidget {
       width: width,
       height: height ?? 40.h,
       child: TextFormField(
+        onTap: onTap,
         onChanged: onChanged,
         controller: controller,
         validator: validator,
@@ -70,6 +75,7 @@ class TextFormFieldWidget extends StatelessWidget {
           suffixIcon: suffixIcon,
           suffixIconColor: Colors.black,
         ),
+        readOnly: readOnly ?? false,
         maxLength: maxLength,
         maxLines: obscureText == true ? 1 : maxLines,
       ),

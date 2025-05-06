@@ -4,11 +4,13 @@ import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/features/Communities/Screens/communitys_details_screen.dart';
+import 'package:y2y/features/Communities/Screens/create_community_screen.dart';
 import 'package:y2y/features/Communities/Screens/joined_commynitiy_screen.dart';
 import 'package:y2y/features/Communities/Screens/my_community_details_screen.dart';
 import 'package:y2y/features/Communities/provider/get_all_communities_of_specific_user_provider.dart';
 import 'package:y2y/features/Communities/provider/get_all_communities_of_specific_voulnteer_provider.dart';
 import 'package:y2y/features/Communities/provider/get_all_communities_provider.dart';
+import 'package:y2y/features/user/provider/get_user_provider.dart';
 
 class Communities extends StatefulWidget {
   const Communities({super.key});
@@ -30,12 +32,28 @@ class _CommunitiesState extends State<Communities> {
       Provider.of<GetAllCommunitiesOfSpecificUserProvider>(context,
               listen: false)
           .getAllCommunitiesgetOfSpecificuser();
+      Provider.of<GetUserProvider>(context, listen: false).fetchUserProfile();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<GetUserProvider>(context);
+
     return Scaffold(
+      floatingActionButton:
+          userProvider.user?.roles?.contains("volunteer") == true
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateCommunityScreen()));
+                  },
+                  backgroundColor: purple,
+                  child: Image.asset('assets/img/Vector.png'),
+                )
+              : null,
       backgroundColor: cornflowerblue,
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -43,7 +61,6 @@ class _CommunitiesState extends State<Communities> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// 🔹 عرض المجتمعات التي يديرها المستخدم فقط إذا لم تكن فارغة
               Consumer<GetAllCommunitiesOfSpecificVoulnteerProvider>(
                 builder: (context, provider, child) {
                   final managedCommunities = provider.communities;
@@ -79,7 +96,7 @@ class _CommunitiesState extends State<Communities> {
                           image: NetworkImage(imageUrl),
                           title: community.name ?? '',
                           subtitle: community.desc ?? '',
-                          chip: community.types?.first ?? '',
+                          chip: community.category?.name ?? '',
                           joinWidget: TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -162,7 +179,7 @@ class _CommunitiesState extends State<Communities> {
                               image: NetworkImage(imageUrl),
                               title: community.name ?? '',
                               subtitle: community.desc ?? '',
-                              chip: community.types?.first ?? "",
+                              chip: community.category?.name ?? "",
                               joinWidget: TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -241,7 +258,7 @@ class _CommunitiesState extends State<Communities> {
                           image: NetworkImage(imageUrl),
                           title: community.name ?? '',
                           subtitle: community.desc ?? '',
-                          chip: community.types?.first ?? '',
+                          chip: community.category?.name ?? '',
                           joinWidget: TextButton(
                             onPressed: () {
                               Navigator.push(

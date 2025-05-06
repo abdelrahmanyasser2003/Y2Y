@@ -13,6 +13,7 @@ import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
+import 'package:y2y/features/Communities/widges/listtile_volunteer_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
 
 class CommunityDetails extends StatefulWidget {
@@ -27,6 +28,7 @@ class CommunityDetails extends StatefulWidget {
 class _CommunityDetailsState extends State<CommunityDetails> {
   late Future<UserDetailsModel> _userDetailsFuture;
   bool hasRequested = false;
+  bool showAllRequests = false;
 
   @override
   void initState() {
@@ -37,6 +39,11 @@ class _CommunityDetailsState extends State<CommunityDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final Volunteer? volunteer = widget.community.volunteer;
+    final List<Volunteer> members = widget.community.members ?? [];
+    final displayedRequests =
+        showAllRequests ? members : members.take(2).toList();
+
     return Scaffold(
         backgroundColor: white,
         appBar: PreferredSize(
@@ -351,7 +358,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.startAt
+                                                .community.date?.startDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -390,7 +397,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.finishAt
+                                                .community.date?.endDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -494,7 +501,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "Members :",
                               style: TextStyle(
                                 fontSize: 20,
@@ -503,21 +510,79 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 fontFamily: "Roboto",
                               ),
                             ),
-                            Text(
-                              "View all >",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: cornflowerblue,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: "Roboto",
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  showAllRequests = !showAllRequests;
+                                });
+                              },
+                              child: Text(
+                                showAllRequests
+                                    ? "View less"
+                                    : "View all (${widget.community.members?.length ?? 0})",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: cornflowerblue,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Roboto",
+                                ),
                               ),
                             ),
                           ],
                         ),
                         hieghtspace(hieght: 10),
-                        ListrileCommunityWidget(
-                          title: 'ss',
-                          onTap: () {},
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (volunteer != null) ...[
+                              ListtileVolunteerWidget(
+                                backgroundImage: NetworkImage(
+                                  '${ApiEndpoints.baseUrl}${volunteer.profileImage?.replaceAll("\\", "/") ?? ""}',
+                                ),
+                                title:
+                                    '${volunteer.firstName ?? ''} ${volunteer.lastName ?? ''}',
+                                onTap: () {
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) =>
+                                  //         UserDetailsJoined(joined: volunteer),
+                                  //   ),
+                                  // );
+                                },
+                              ),
+                            ],
+                            Divider(
+                              color: purple,
+                            ),
+                            hieghtspace(hieght: 5),
+                            ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  const Divider(color: purple),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: displayedRequests.length,
+                              itemBuilder: (context, index) {
+                                final member = displayedRequests[index];
+                                return ListrileCommunityWidget(
+                                  backgroundImage: NetworkImage(
+                                    '${ApiEndpoints.baseUrl}${member.profileImage?.replaceAll("\\", "/") ?? ""}',
+                                  ),
+                                  title:
+                                      '${member.firstName ?? ''} ${member.lastName ?? ''}',
+                                  onTap: () {
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) =>
+                                    //         UserDetailsJoined(joined: member),
+                                    //   ),
+                                    // );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         hieghtspace(hieght: 90),
                         SizedBox(

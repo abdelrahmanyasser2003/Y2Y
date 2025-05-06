@@ -9,17 +9,18 @@ import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/features/Bottom%20Navigation%20Bar/screens/home_screen.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_user_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/provider/leave_community_provider.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
+import 'package:y2y/features/Communities/widges/listtile_volunteer_widget.dart';
+import 'package:y2y/features/user/models/user_details_joined.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
-import 'package:y2y/features/user/screens/user_details_screen.dart';
 
 class JoinedCommynitiyScreen extends StatefulWidget {
   const JoinedCommynitiyScreen({super.key, required this.joinedCommunity});
-  final CommunitiesModellvoulnteer joinedCommunity;
+  final GetAllCommunitiesUserModel joinedCommunity;
 
   @override
   State<JoinedCommynitiyScreen> createState() => _JoinedCommynitiyScreenState();
@@ -37,9 +38,10 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
   late Future<UserDetailsModel> _userDetailsFuture;
   @override
   Widget build(BuildContext context) {
-    final members = widget.joinedCommunity.members ?? [];
+    final Volunteer? volunteer = widget.joinedCommunity.volunteer;
+    final List<Volunteer> members = widget.joinedCommunity.members ?? [];
     final displayedRequests =
-        showAllRequests ? members : members.take(3).toList();
+        showAllRequests ? members : members.take(2).toList();
 
     return Scaffold(
         backgroundColor: white,
@@ -143,10 +145,9 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.joinedCommunity.types?.first ??
+                                widget.joinedCommunity.category?.name ??
                                     'Unknown',
                                 style: const TextStyle(
-                                  fontSize: 12,
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -362,7 +363,7 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .joinedCommunity.date?.startAt
+                                                .joinedCommunity.date?.startDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -402,7 +403,7 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .joinedCommunity.date?.finishAt
+                                                .joinedCommunity.date?.endDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -539,29 +540,63 @@ class _JoinedCommynitiyScreenState extends State<JoinedCommynitiyScreen> {
                           ],
                         ),
 
-                        hieghtspace(hieght: 10),
-                        ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              const Divider(color: purple),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: displayedRequests.length,
-                          itemBuilder: (context, index) {
-                            final join = widget.joinedCommunity.members ?? [];
-                            final displayedRequests =
-                                showAllRequests ? join : join.take(3).toList();
-                            final joined = displayedRequests[index];
-
-                            return ListrileCommunityWidget(
-                              title: "",
-                              onTap: () {
-                                // Navigator.push(context, MaterialPageRoute(builder: (context)=))
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (volunteer != null) ...[
+                              ListtileVolunteerWidget(
+                                backgroundImage: NetworkImage(
+                                  '${ApiEndpoints.baseUrl}${volunteer.profileImage?.replaceAll("\\", "/") ?? ""}',
+                                ),
+                                title:
+                                    '${volunteer.firstName ?? ''} ${volunteer.lastName ?? ''}',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserDetailsJoined(joined: volunteer),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                            Divider(
+                              color: purple,
+                              
+                            ),
+                            hieghtspace(hieght: 5),
+                            ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  const Divider(color: purple),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: displayedRequests.length,
+                              itemBuilder: (context, index) {
+                                final member = displayedRequests[index];
+                                return ListrileCommunityWidget(
+                                  backgroundImage: NetworkImage(
+                                    '${ApiEndpoints.baseUrl}${member.profileImage?.replaceAll("\\", "/") ?? ""}',
+                                  ),
+                                  title:
+                                      '${member.firstName ?? ''} ${member.lastName ?? ''}',
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UserDetailsJoined(joined: member),
+                                      ),
+                                    );
+                                  },
+                                );
                               },
-                            );
-                          },
+                            ),
+                          ],
                         ),
 
-                        hieghtspace(hieght: 90),
+                        hieghtspace(hieght: 30),
+
                         SizedBox(
                           width: double.infinity,
                           height: 60,
