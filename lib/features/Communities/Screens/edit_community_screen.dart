@@ -986,7 +986,7 @@ class _EditCommunityScreenState extends State<EditCommunityScreen> {
                     if (success) {
                       showAnimatedSnackDialog(
                         context,
-                        message: 'تم التحديث بنجاح',
+                        message: 'Updated successfully',
                         type: AnimatedSnackBarType.success,
                       );
                       Navigator.push(context,
@@ -994,7 +994,7 @@ class _EditCommunityScreenState extends State<EditCommunityScreen> {
                     } else {
                       showAnimatedSnackDialog(
                         context,
-                        message: 'فشل التحديث، حاول مرة أخرى',
+                        message: 'Update failed, try again',
                         type: AnimatedSnackBarType.error,
                       );
                     }

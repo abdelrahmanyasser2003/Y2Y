@@ -15,6 +15,8 @@ import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
 import 'package:y2y/features/Communities/widges/listtile_volunteer_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
+import 'package:y2y/features/user/screens/user_details_joined.dart';
+import 'package:y2y/features/user/screens/user_detials_members_screen.dart';
 
 class CommunityDetails extends StatefulWidget {
   final GetAllCommunitiesModel community;
@@ -542,13 +544,14 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 title:
                                     '${volunteer.firstName ?? ''} ${volunteer.lastName ?? ''}',
                                 onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         UserDetailsJoined(joined: volunteer),
-                                  //   ),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserDetialsMembersScreen(
+                                              members: volunteer),
+                                    ),
+                                  );
                                 },
                               ),
                             ],
@@ -571,13 +574,15 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   title:
                                       '${member.firstName ?? ''} ${member.lastName ?? ''}',
                                   onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //         UserDetailsJoined(joined: member),
-                                    //   ),
-                                    // );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UserDetialsMembersScreen(
+                                          members: member,
+                                        ),
+                                      ),
+                                    );
                                   },
                                 );
                               },

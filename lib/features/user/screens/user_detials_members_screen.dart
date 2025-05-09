@@ -3,14 +3,19 @@ import 'package:intl/intl.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
-import 'package:y2y/core/widges/spaceing_widges.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_user_model.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
 import 'package:y2y/features/user/widges/user_details_container_widget.dart';
 
-class UserDetailsJoined extends StatelessWidget {
-  const UserDetailsJoined({super.key, required this.joined});
-  final Volunteer joined;
+class UserDetialsMembersScreen extends StatefulWidget {
+  const UserDetialsMembersScreen({super.key, required this.members});
+  final Volunteer members;
 
+  @override
+  State<UserDetialsMembersScreen> createState() =>
+      _UserDetialsMembersScreenState();
+}
+
+class _UserDetialsMembersScreenState extends State<UserDetialsMembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,53 +33,53 @@ class UserDetailsJoined extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: Icon(Icons.cancel_outlined,
-                                    color: cornflowerblue),
-                              )
-                            ],
-                          ),
-                          Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                    '${ApiEndpoints.baseUrl}${joined.profileImage?.replaceAll("\\", "/") ?? ""}'),
+                                    '${ApiEndpoints.baseUrl}${widget.members.profileImage?.replaceAll("\\", "/") ?? ""}'),
                                 radius: 40,
                               ),
                               SizedBox(
                                 width: 10,
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${joined.firstName ?? ''} ${joined.lastName ?? ""}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "Roboto",
-                                      fontWeight: FontWeight.w700,
-                                      color: cornflowerblue,
-                                    ),
-                                  ),
-                                  Text(
-                                    joined.userName ?? "No Username Avaliable",
-                                    overflow: TextOverflow.fade,
-                                    softWrap: true,
-                                    style: TextStyle(
-                                        fontSize: 13,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${widget.members.firstName ?? ''} ${widget.members.lastName ?? ""}',
+                                      style: TextStyle(
+                                        fontSize: 20,
                                         fontFamily: "Roboto",
-                                        fontWeight: FontWeight.w500,
-                                        color: cornflowerblue),
-                                  ),
-                                ],
+                                        fontWeight: FontWeight.w700,
+                                        color: cornflowerblue,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.members.userName ??
+                                          "No Username Avaliable",
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.w500,
+                                          color: cornflowerblue),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Widthspace(width: 70),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Icon(
+                                  Icons.cancel_outlined,
+                                  size: 30,
+                                  color: cornflowerblue,
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(
@@ -207,8 +212,9 @@ class UserDetailsJoined extends StatelessWidget {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                            text: joined.bd != null
-                                ? DateFormat('yyyy-MM-dd').format(joined.bd!)
+                            text: widget.members.bd != null
+                                ? DateFormat('yyyy-MM-dd')
+                                    .format(widget.members.bd!)
                                 : "No date available",
                           ),
                           SizedBox(
@@ -226,8 +232,8 @@ class UserDetailsJoined extends StatelessWidget {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text:
-                                  joined.education ?? "No Education Avaliable"),
+                              text: widget.members.education ??
+                                  "No Education Avaliable"),
                           SizedBox(
                             height: 15,
                           ),
@@ -243,9 +249,9 @@ class UserDetailsJoined extends StatelessWidget {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                            text: (joined.skills != null &&
-                                    joined.skills!.isNotEmpty)
-                                ? joined.skills!.join(", ")
+                            text: (widget.members.skills != null &&
+                                    widget.members.skills!.isNotEmpty)
+                                ? widget.members.skills!.join(", ")
                                 : "No Skills Avaliable",
                           ),
                           SizedBox(
@@ -279,7 +285,8 @@ class UserDetailsJoined extends StatelessWidget {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        joined.bio ?? "No Bio Avaliable",
+                                        widget.members.bio ??
+                                            "No Bio Avaliable",
                                         overflow: TextOverflow.visible,
                                         style: TextStyle(
                                           color: cornflowerblue,

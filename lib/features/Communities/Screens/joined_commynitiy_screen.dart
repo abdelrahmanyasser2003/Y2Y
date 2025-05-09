@@ -15,7 +15,7 @@ import 'package:y2y/features/Communities/provider/leave_community_provider.dart'
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
 import 'package:y2y/features/Communities/widges/listtile_volunteer_widget.dart';
-import 'package:y2y/features/user/models/user_details_joined.dart';
+import 'package:y2y/features/user/screens/user_details_joined.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
 
 class JoinedCommynitiyScreen extends StatefulWidget {

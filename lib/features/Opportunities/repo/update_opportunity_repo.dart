@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/networking/dio_helper.dart';
 import 'package:y2y/core/utils/storage_helper.dart';
@@ -43,7 +44,8 @@ class UpdateOpportunityRepo {
     if (image != null) {
       formData.files.add(MapEntry(
         'image',
-        await MultipartFile.fromFile(image.path, filename: 'update.jpg'),
+        await MultipartFile.fromFile(image.path,
+            filename: 'update.jpg', contentType: MediaType('image', 'jpg')),
       ));
     }
 

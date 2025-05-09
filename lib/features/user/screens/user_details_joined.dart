@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
+import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Communities/model/get_all_communities_user_model.dart';
 import 'package:y2y/features/user/widges/user_details_container_widget.dart';
 
-class Userdetils extends StatefulWidget {
-  const Userdetils({super.key, required this.request});
-  final AskToJoin request;
+class UserDetailsJoined extends StatelessWidget {
+  const UserDetailsJoined({super.key, required this.joined});
+  final Volunteer joined;
 
-  @override
-  State<Userdetils> createState() => _UserdetilsState();
-}
-
-class _UserdetilsState extends State<Userdetils> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +31,8 @@ class _UserdetilsState extends State<Userdetils> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('uuserdetils.imagepath'),
+                                backgroundImage: NetworkImage(
+                                    '${ApiEndpoints.baseUrl}${joined.profileImage?.replaceAll("\\", "/") ?? ""}'),
                                 radius: 40,
                               ),
                               SizedBox(
@@ -45,13 +43,24 @@ class _UserdetilsState extends State<Userdetils> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${widget.request.firstName} ${widget.request.lastName}',
+                                      '${joined.firstName ?? ''} ${joined.lastName ?? ""}',
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontFamily: "Roboto",
                                         fontWeight: FontWeight.w700,
                                         color: cornflowerblue,
                                       ),
+                                    ),
+                                    Text(
+                                      joined.userName ??
+                                          "No Username Avaliable",
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.w500,
+                                          color: cornflowerblue),
                                     ),
                                   ],
                                 ),
@@ -198,7 +207,10 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: 'uuserdetils.dateModel'),
+                            text: joined.bd != null
+                                ? DateFormat('yyyy-MM-dd').format(joined.bd!)
+                                : "No date available",
+                          ),
                           SizedBox(
                             height: 15,
                           ),
@@ -213,7 +225,9 @@ class _UserdetilsState extends State<Userdetils> {
                           SizedBox(
                             height: 5,
                           ),
-                          UserDetailsContainerWidget(text: 'widget.request'),
+                          UserDetailsContainerWidget(
+                              text:
+                                  joined.education ?? "No Education Avaliable"),
                           SizedBox(
                             height: 15,
                           ),
@@ -229,7 +243,11 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: 'uuserdetils.skillModel'),
+                            text: (joined.skills != null &&
+                                    joined.skills!.isNotEmpty)
+                                ? joined.skills!.join(", ")
+                                : "No Skills Avaliable",
+                          ),
                           SizedBox(
                             height: 15,
                           ),
@@ -261,7 +279,7 @@ class _UserdetilsState extends State<Userdetils> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        'uuserdetils.bioModel',
+                                        joined.bio ?? "No Bio Avaliable",
                                         overflow: TextOverflow.visible,
                                         style: TextStyle(
                                           color: cornflowerblue,
