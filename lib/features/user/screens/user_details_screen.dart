@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
@@ -33,8 +35,8 @@ class _UserdetilsState extends State<Userdetils> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('uuserdetils.imagepath'),
+                                backgroundImage: NetworkImage(
+                                    '${ApiEndpoints.baseUrl}${widget.request.profileImage?.replaceAll("\\", "/") ?? ""}'),
                                 radius: 40,
                               ),
                               SizedBox(
@@ -45,13 +47,24 @@ class _UserdetilsState extends State<Userdetils> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${widget.request.firstName} ${widget.request.lastName}',
+                                      '${widget.request.firstName ?? ''} ${widget.request.lastName ?? ""}',
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontFamily: "Roboto",
                                         fontWeight: FontWeight.w700,
                                         color: cornflowerblue,
                                       ),
+                                    ),
+                                    Text(
+                                      widget.request.userName ??
+                                          "No Username Avaliable",
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: "Roboto",
+                                          fontWeight: FontWeight.w500,
+                                          color: cornflowerblue),
                                     ),
                                   ],
                                 ),
@@ -198,7 +211,11 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: 'uuserdetils.dateModel'),
+                            text: widget.request.bd != null
+                                ? DateFormat('yyyy-MM-dd')
+                                    .format(widget.request.bd!)
+                                : "No date available",
+                          ),
                           SizedBox(
                             height: 15,
                           ),
@@ -213,7 +230,9 @@ class _UserdetilsState extends State<Userdetils> {
                           SizedBox(
                             height: 5,
                           ),
-                          UserDetailsContainerWidget(text: 'widget.request'),
+                          UserDetailsContainerWidget(
+                              text: widget.request.education ??
+                                  "No Education Avaliable"),
                           SizedBox(
                             height: 15,
                           ),
@@ -229,7 +248,11 @@ class _UserdetilsState extends State<Userdetils> {
                             height: 5,
                           ),
                           UserDetailsContainerWidget(
-                              text: 'uuserdetils.skillModel'),
+                            text: (widget.request.skills != null &&
+                                    widget.request.skills!.isNotEmpty)
+                                ? widget.request.skills!.join(", ")
+                                : "No Skills Avaliable",
+                          ),
                           SizedBox(
                             height: 15,
                           ),
@@ -261,7 +284,8 @@ class _UserdetilsState extends State<Userdetils> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        'uuserdetils.bioModel',
+                                        widget.request.bio ??
+                                            "No Bio Avaliable",
                                         overflow: TextOverflow.visible,
                                         style: TextStyle(
                                           color: cornflowerblue,
