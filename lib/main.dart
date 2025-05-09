@@ -16,12 +16,14 @@ import 'package:y2y/features/Communities/provider/get_all_communities_provider.d
 import 'package:y2y/features/Communities/provider/handle_join_request_provider.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/provider/leave_community_provider.dart';
+import 'package:y2y/features/Communities/provider/update_community_provider.dart';
 import 'package:y2y/features/Opportunities/provider/delete_opportunity_provider.dart';
 import 'package:y2y/features/Opportunities/provider/get_all_opportunities_provider.dart';
 import 'package:y2y/features/Opportunities/provider/get_all_reacts_provider.dart';
 import 'package:y2y/features/Opportunities/provider/get_opportunities_of_user_provider.dart';
 import 'package:y2y/features/Opportunities/provider/make_react_provider.dart';
 import 'package:y2y/features/Opportunities/provider/new_opportunity_provider.dart';
+import 'package:y2y/features/Opportunities/provider/update_opportunity_provider.dart';
 import 'package:y2y/features/Search/provider/get_all_categoris_provider.dart';
 import 'package:y2y/features/Search/provider/get_all_communities_of_specific_subcategory_provider.dart';
 import 'package:y2y/features/Search/provider/get_all_subcategories_provider.dart';
@@ -68,10 +70,12 @@ void main() {
     ChangeNotifierProvider(create: (ctx) => LeaveCommunityProvider()),
     ChangeNotifierProvider(create: (ctx) => CreateCommunityProvider()),
     ChangeNotifierProvider(create: (ctx) => DeleteCommunityProvider()),
+    ChangeNotifierProvider(create: (ctx) => UpdateCommunityProvider()),
     ChangeNotifierProvider(
         create: (ctx) => GetAllCommunitiesOfSpecificUserProvider()),
     ChangeNotifierProvider(
         create: (ctx) => GetAllCommunitiesOfSpecificVoulnteerProvider()),
+    ChangeNotifierProvider(create: (ctx) => UpdateOpportunityProvider()),
   ], child: MyApp()));
 }
 

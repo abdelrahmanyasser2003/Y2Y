@@ -140,6 +140,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       firstDate: DateTime(1990),
       lastDate: DateTime(2025),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData().copyWith(
+            colorScheme: ColorScheme.light(
+              surface: cornflowerblue,
+              primary: white,
+              onPrimary: cornflowerblue,
+              onSurface: white,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {

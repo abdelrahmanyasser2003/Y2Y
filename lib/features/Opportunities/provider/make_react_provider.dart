@@ -9,8 +9,9 @@ class MakeReactProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Map<String, List<React>> opportunityReacts = {};
+  Map<String, List<React>> opportunityReacts = {}; // بيانات التفاعل للمجتمع
 
+  // دالة للتفاعل أو إزالة التفاعل
   Future<bool> makeOrRemoveReact(String opportunityId, String reactType) async {
     try {
       _isLoading = true;
@@ -27,8 +28,8 @@ class MakeReactProvider with ChangeNotifier {
         );
 
         if (existingReact.user!.isNotEmpty) {
-          // حذف الريأكت
-          success = await MakeReactRepo().makeReact(opportunityId, '');
+          // إذا كان الرياكت موجودًا، قم بإزالته من الـ API
+          success = await MakeReactRepo().makeReact(opportunityId, 'remove');
           if (success) {
             reacts.removeWhere(
               (react) => react.user == 'userId' && react.react == reactType,
@@ -60,6 +61,17 @@ class MakeReactProvider with ChangeNotifier {
       notifyListeners();
       print('❌ Error in makeOrRemoveReact: $e');
       return false;
+    }
+  }
+
+  // دالة لجلب التفاعلات الخاصة بكل فرصة
+  Future<void> fetchReacts(String opportunityId) async {
+    try {
+      final reacts = await MakeReactRepo().fetchReacts(opportunityId);
+      opportunityReacts[opportunityId] = reacts ?? [];
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error fetching reacts: $e');
     }
   }
 }

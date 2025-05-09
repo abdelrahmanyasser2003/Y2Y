@@ -88,6 +88,21 @@ class DioHelper {
     }
   }
 
+  puttRequest({
+    required String endPoint,
+    required FormData data,
+    Options? options,
+  }) async {
+    try {
+      final Response response =
+          await dio!.put(endPoint, data: data, options: options);
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   deleteRequest({
     required String endPoint,
     Map<String, dynamic>? data,

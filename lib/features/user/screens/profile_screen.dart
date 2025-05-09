@@ -34,6 +34,7 @@ class _ProfilepageState extends State<Profilepage> {
   Widget build(BuildContext context) {
     final signupdetails = Provider.of<EditProfileProvider>(context);
     final userProvider = Provider.of<GetUserProvider>(context);
+    String? volunteerReqStatus = userProvider.user?.vulonteerReqStatus;
 
     return Scaffold(
       backgroundColor: cornflowerblue,
@@ -95,14 +96,20 @@ class _ProfilepageState extends State<Profilepage> {
                           ],
                         ),
                         hieghtspace(hieght: 10),
-                        Row(
-                          children: [
-                            ElvatedButtonPrfileWidget(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EditProfileScreen(
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  // زر Edit Profile مع التحكم في الحالة
+                                  if (volunteerReqStatus == 'pending') ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfileScreen(
                                               bio: signupdetails.bio,
                                               city: userProvider
                                                       .user?.address?.city ??
@@ -134,32 +141,255 @@ class _ProfilepageState extends State<Profilepage> {
                                                   '',
                                               phone: userProvider.user?.phone ??
                                                   '',
-                                            )));
-                                // هنا يمكنك فتح شاشة تعديل البيانات
-                              },
-                              text: 'Edit Profile',
-                              color: white,
-                              width: 146.w,
-                              icon: Icons.edit,
-                            ),
-                            Widthspace(width: 5),
-                            ElvatedButtonPrfileWidget(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            BecomeVolunteer()));
-                              },
-                              text: 'Become Volunteer',
-                              fontSize: 13.sp,
-                              width: 189.w,
-                              icon: Icons.person,
-                              colorIcon: purple,
-                            ),
-                          ],
-                        ),
-                        hieghtspace(hieght: 20),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      text: 'Edit Profile',
+                                      color: white,
+                                      width: 146.w,
+                                      icon: Icons.edit,
+                                    ),
+                                  ] else if (volunteerReqStatus ==
+                                      'accepted') ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfileScreen(
+                                              bio: signupdetails.bio,
+                                              city: userProvider
+                                                      .user?.address?.city ??
+                                                  "",
+                                              dateOfBirth:
+                                                  signupdetails.dateOfBirth,
+                                              education: userProvider
+                                                      .user?.education ??
+                                                  '',
+                                              gender:
+                                                  userProvider.user?.gender ??
+                                                      '',
+                                              name:
+                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              skill: userProvider
+                                                      .user?.skills?.first ??
+                                                  "",
+                                              state: userProvider
+                                                      .user?.address?.state ??
+                                                  "",
+                                              street: userProvider
+                                                      .user?.address?.street ??
+                                                  "",
+                                              subname:
+                                                  userProvider.user?.userName ??
+                                                      '',
+                                              imgpath: userProvider
+                                                      .user?.profileImage ??
+                                                  '',
+                                              phone: userProvider.user?.phone ??
+                                                  '',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      text: 'Edit Profile',
+                                      color: white, // اللون الطبيعي
+                                      width: 190.w,
+                                      icon: Icons.edit,
+                                    ),
+                                  ] else if (volunteerReqStatus ==
+                                      'rejected') ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfileScreen(
+                                              bio: signupdetails.bio,
+                                              city: userProvider
+                                                      .user?.address?.city ??
+                                                  "",
+                                              dateOfBirth:
+                                                  signupdetails.dateOfBirth,
+                                              education: userProvider
+                                                      .user?.education ??
+                                                  '',
+                                              gender:
+                                                  userProvider.user?.gender ??
+                                                      '',
+                                              name:
+                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              skill: userProvider
+                                                      .user?.skills?.first ??
+                                                  "",
+                                              state: userProvider
+                                                      .user?.address?.state ??
+                                                  "",
+                                              street: userProvider
+                                                      .user?.address?.street ??
+                                                  "",
+                                              subname:
+                                                  userProvider.user?.userName ??
+                                                      '',
+                                              imgpath: userProvider
+                                                      .user?.profileImage ??
+                                                  '',
+                                              phone: userProvider.user?.phone ??
+                                                  '',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      text: 'Edit Profile',
+                                      color: white,
+                                      width: 146.w,
+                                      icon: Icons.edit,
+                                    ),
+                                  ] else if (volunteerReqStatus == null) ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditProfileScreen(
+                                              bio: signupdetails.bio,
+                                              city: userProvider
+                                                      .user?.address?.city ??
+                                                  "",
+                                              dateOfBirth:
+                                                  signupdetails.dateOfBirth,
+                                              education: userProvider
+                                                      .user?.education ??
+                                                  '',
+                                              gender:
+                                                  userProvider.user?.gender ??
+                                                      '',
+                                              name:
+                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              skill: userProvider
+                                                      .user?.skills?.join(', ') ??
+                                                  '',
+                                                  
+                                              state: userProvider
+                                                      .user?.address?.state ??
+                                                  "",
+                                              street: userProvider
+                                                      .user?.address?.street ??
+                                                  "",
+                                              subname:
+                                                  userProvider.user?.userName ??
+                                                      '',
+                                              imgpath: userProvider
+                                                      .user?.profileImage ??
+                                                  '',
+                                              phone: userProvider.user?.phone ??
+                                                  '',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      text: 'Edit Profile',
+                                      color:
+                                          white, // لون رمادي لإظهار أن الحالة غير موجودة
+                                      width: 146.w,
+                                      icon: Icons.edit,
+                                    ),
+                                  ],
+                                  Widthspace(width: 5),
+
+                                  // زر Become Volunteer مع التحكم في الحالة
+                                  if (volunteerReqStatus == 'pending') ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: null,
+                                      text: 'Request Submitted',
+                                      color: purple,
+                                      fontSize: 12.sp,
+                                      width: 189.w,
+                                      icon: Icons.access_time_outlined,
+                                      colorIcon: purple,
+                                    ),
+                                  ] else if (volunteerReqStatus ==
+                                      'accepted') ...[
+                                    Container(
+                                      height: 45,
+                                      width: 45,
+                                      decoration: BoxDecoration(
+                                        color: button,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.person,
+                                        color: purple,
+                                      ),
+                                    )
+                                  ] else if (volunteerReqStatus ==
+                                      'rejected') ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BecomeVolunteer()),
+                                        );
+                                      },
+                                      text: 'Become Volunteer',
+                                      fontSize: 13.sp,
+                                      width: 189.w,
+                                      icon: Icons.person,
+                                      colorIcon: Colors
+                                          .grey, // لون رمادي لإظهار أن المتطوع مرفوض
+                                    ),
+                                  ] else if (volunteerReqStatus == null) ...[
+                                    ElvatedButtonPrfileWidget(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BecomeVolunteer()),
+                                        );
+                                      },
+                                      text: 'Become Volunteer',
+                                      color: purple,
+                                      fontSize: 13.sp,
+                                      width: 189.w,
+                                      icon: Icons.person,
+                                      colorIcon:
+                                          purple, // لون رمادي لإظهار أن الحالة غير موجودة
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              // النص أسفل الأزرار في حالة pending
+                              if (volunteerReqStatus == 'pending') ...[
+                                hieghtspace(hieght: 10),
+                                Text(
+                                  'Status: Your request is under review',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Montserrat',
+                                    color: Color(0xffB3D7ED),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                hieghtspace(hieght: 4),
+                                Text(
+                                  'We will notify you once your application is accepted or rejected',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Roboto',
+                                    color: Color(0xffB3D7ED),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ]),
+                        hieghtspace(hieght: 10),
                         Divider(
                           color: button,
                           thickness: 1,

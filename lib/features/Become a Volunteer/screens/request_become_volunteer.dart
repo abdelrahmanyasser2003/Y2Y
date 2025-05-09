@@ -1,17 +1,22 @@
-import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/styling/app_colors.dart';
+import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Become%20a%20Volunteer/models/become_volunteer_model.dart';
 import 'package:y2y/features/Become%20a%20Volunteer/provider/become_volunteer_provider.dart';
+import 'package:y2y/features/Bottom%20Navigation%20Bar/screens/home_screen.dart';
 
 class RequestBecomeVolunteer extends StatefulWidget {
   const RequestBecomeVolunteer({super.key});
@@ -24,57 +29,150 @@ class _RequestBecomeVolunteerState extends State<RequestBecomeVolunteer> {
   TextEditingController skilsController = TextEditingController();
   TextEditingController degreesController = TextEditingController();
 
-  String? frontImageBase64;
-  String? backImageBase64;
   bool isFront = true;
+  Uint8List? frontimgPath;
+  Uint8List? backimgPath;
 
-  Future<void> uploadImage2Screen(ImageSource source) async {
+  Future<File> convertUint8ListToFile(Uint8List data, String filename) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File(path.join(tempDir.path, filename));
+    return await file.writeAsBytes(data);
+  }
+
+  Future<void> uploadFrontImage2Screen(ImageSource source) async {
     final XFile? pickedImg = await ImagePicker().pickImage(source: source);
     if (pickedImg != null) {
       Uint8List bytes = await pickedImg.readAsBytes();
-      String base64String = base64Encode(bytes);
       setState(() {
-        if (isFront) {
-          frontImageBase64 = base64String;
-        } else {
-          backImageBase64 = base64String;
-        }
+        frontimgPath = bytes;
       });
     }
-    Navigator.pop(context); // إغلاق المودال بعد اختيار الصورة
   }
 
-  void showImagePicker(bool forFront) {
-    isFront = forFront;
-    showModalBottomSheet(
-      context: context,
+  Future<void> uploadBackImage2Screen(ImageSource source) async {
+    final XFile? pickedImg = await ImagePicker().pickImage(source: source);
+    if (pickedImg != null) {
+      Uint8List bytes = await pickedImg.readAsBytes();
+      setState(() {
+        backimgPath = bytes;
+      });
+    }
+  }
+
+  showModelFront(BuildContext context) {
+    return showModalBottomSheet(
+      context: context, // استخدام BuildContext هنا
       builder: (BuildContext context) {
         return Container(
-          color: skyblue,
+          color:
+              cornflowerblue, // تغيير skyblue إلى Colors.skyBlue أو أي لون آخر
           padding: const EdgeInsets.all(10),
-          height: 120.h,
+          height: 120,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () async => await uploadImage2Screen(ImageSource.camera),
-                child: Row(
+                onTap: () async {
+                  await uploadFrontImage2Screen(ImageSource.camera);
+                },
+                child: const Row(
                   children: [
-                    const Icon(Icons.camera, size: 30),
-                    SizedBox(width: MediaQuery.of(context).size.width / 50),
-                    Text("From Camera", style: TextStyle(fontSize: 20.sp))
+                    Icon(
+                      Icons.camera,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Camera",
+                      style: TextStyle(fontSize: 20),
+                    )
                   ],
                 ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height / 40),
+              const SizedBox(
+                height: 22,
+              ),
               GestureDetector(
-                onTap: () async =>
-                    await uploadImage2Screen(ImageSource.gallery),
-                child: Row(
+                onTap: () {
+                  uploadFrontImage2Screen(ImageSource.gallery);
+                },
+                child: const Row(
                   children: [
-                    const Icon(Icons.photo_outlined, size: 30),
-                    SizedBox(width: MediaQuery.of(context).size.width / 50),
-                    Text("From Gallery", style: TextStyle(fontSize: 20.sp))
+                    Icon(
+                      Icons.photo_outlined,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Gallery",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  showModelBack(BuildContext context) {
+    return showModalBottomSheet(
+      context: context, // استخدام BuildContext هنا
+      builder: (BuildContext context) {
+        return Container(
+          color:
+              cornflowerblue, // تغيير skyblue إلى Colors.skyBlue أو أي لون آخر
+          padding: const EdgeInsets.all(10),
+          height: 120,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  await uploadBackImage2Screen(ImageSource.camera);
+                },
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.camera,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Camera",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 22,
+              ),
+              GestureDetector(
+                onTap: () {
+                  uploadBackImage2Screen(ImageSource.gallery);
+                },
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.photo_outlined,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Gallery",
+                      style: TextStyle(fontSize: 20),
+                    )
                   ],
                 ),
               ),
@@ -161,18 +259,33 @@ class _RequestBecomeVolunteerState extends State<RequestBecomeVolunteer> {
                           color: white,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: frontImageBase64 == null
-                            ? IconButton(
-                                onPressed: () => showImagePicker(true),
-                                icon: Icon(Icons.add_photo_alternate_outlined,
-                                    color: Colors.grey),
-                              )
-                            : Image.memory(
-                                base64Decode(frontImageBase64!),
-                                fit: BoxFit.cover,
-                                width: 160,
-                                height: 45,
+                        child: Stack(
+                          children: [
+                            frontimgPath == null
+                                ? const CircleAvatar(
+                                    backgroundColor: white,
+                                    radius: 45,
+                                  )
+                                : CircleAvatar(
+                                    radius: 45,
+                                    backgroundImage: MemoryImage(frontimgPath!),
+                                  ),
+                            Positioned(
+                              left: 22,
+                              bottom: 23,
+                              child: IconButton(
+                                onPressed: () {
+                                  showModelFront(context);
+                                },
+                                icon: const Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 30,
+                                ),
+                                color: Colors.grey,
                               ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -193,18 +306,33 @@ class _RequestBecomeVolunteerState extends State<RequestBecomeVolunteer> {
                           color: white,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: backImageBase64 == null
-                            ? IconButton(
-                                onPressed: () => showImagePicker(false),
-                                icon: Icon(Icons.add_photo_alternate_outlined,
-                                    color: Colors.grey),
-                              )
-                            : Image.memory(
-                                base64Decode(backImageBase64!),
-                                fit: BoxFit.cover,
-                                width: 160,
-                                height: 45,
+                        child: Stack(
+                          children: [
+                            backimgPath == null
+                                ? const CircleAvatar(
+                                    backgroundColor: white,
+                                    radius: 45,
+                                  )
+                                : CircleAvatar(
+                                    radius: 45,
+                                    backgroundImage: MemoryImage(backimgPath!),
+                                  ),
+                            Positioned(
+                              left: 22,
+                              bottom: 23,
+                              child: IconButton(
+                                onPressed: () {
+                                  showModelBack(context);
+                                },
+                                icon: const Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 30,
+                                ),
+                                color: Colors.grey,
                               ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -265,22 +393,68 @@ class _RequestBecomeVolunteerState extends State<RequestBecomeVolunteer> {
                 child: ElvatedButtonWidget(
                   text: 'Submit',
                   onPressed: () async {
-                    final provider = Provider.of<BecomeVolunteerProvider>(
-                        context,
-                        listen: false);
-                    final model = BecomeVolunteerModel(
-                      frontIdCardImage: frontImageBase64 ?? '',
-                      backIdCardImage: backImageBase64 ?? '',
-                      education: degreesController.text,
-                      skills: skilsController.text.split(','),
-                    );
-                    final success = await provider.submitVolunteerForm(model);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(success
-                              ? "تم الإرسال بنجاح"
-                              : "فشل في إرسال الطلب")),
-                    );
+                    // التحقق من الصور
+                    if (frontimgPath == null || frontimgPath!.isEmpty) {
+                      showAnimatedSnackDialog(context,
+                          message: 'Please select an image Front Face',
+                          type: AnimatedSnackBarType.warning);
+                      return;
+                    }
+                    if (backimgPath == null || backimgPath!.isEmpty) {
+                      showAnimatedSnackDialog(context,
+                          message: 'Please select an image Back Face',
+                          type: AnimatedSnackBarType.warning);
+                      return;
+                    }
+
+                    try {
+                      // تحويل الصور إلى ملفات
+                      File frontFace = await convertUint8ListToFile(
+                          frontimgPath!, 'front_image.jpg');
+                      File backFace = await convertUint8ListToFile(
+                          backimgPath!, 'back_image.jpg');
+
+                      // تحضير البيانات
+                      final model = BecomeVolunteerModel(
+                        frontIdCardImage: frontFace,
+                        backIdCardImage: backFace,
+                        education: degreesController.text,
+                        skills: skilsController.text.split(','),
+                      );
+
+                      // استرجاع الـ provider باستخدام Provider.of
+                      final provider = Provider.of<BecomeVolunteerProvider>(
+                          context,
+                          listen: false);
+
+                      // إرسال البيانات عبر الـ Provider
+                      await provider.becomeVolunteer(model);
+
+                      // الحصول على نتيجة الإرسال
+                      final success = provider
+                          .success; // فرض أن الـ Provider يحتوي على حقل success لتحديد النتيجة
+
+                      // عرض النتيجة للمستخدم
+                      if (success) {
+                        showAnimatedSnackDialog(context,
+                            message: 'The request has been sent successfully',
+                            type: AnimatedSnackBarType.success);
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Homepage()));
+                      } else {
+                        showAnimatedSnackDialog(context,
+                            message:
+                                'An error occurred while sending the request',
+                            type: AnimatedSnackBarType.error);
+                      }
+                    } catch (e) {
+                      showAnimatedSnackDialog(context,
+                          message: 'An error occurred: ${e.toString()}',
+                          type: AnimatedSnackBarType.error);
+                    }
                   },
                   backgroundColor: const WidgetStatePropertyAll(green),
                   color: white,

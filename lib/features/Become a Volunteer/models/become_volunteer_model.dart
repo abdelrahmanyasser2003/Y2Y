@@ -1,8 +1,9 @@
-class BecomeVolunteerModel {
-  final String frontIdCardImage;
-  final String backIdCardImage;
-  final String education;
+import 'dart:io';
 
+class BecomeVolunteerModel {
+  final File frontIdCardImage;
+  final File backIdCardImage;
+  final String education;
   final List<String> skills;
 
   BecomeVolunteerModel({
@@ -12,7 +13,7 @@ class BecomeVolunteerModel {
     required this.skills,
   });
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'frontIdCardImage': frontIdCardImage,
       'backIdCardImage': backIdCardImage,

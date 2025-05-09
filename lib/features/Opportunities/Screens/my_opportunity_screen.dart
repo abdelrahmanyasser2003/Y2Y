@@ -9,6 +9,7 @@ import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
+import 'package:y2y/features/Opportunities/Screens/edit_opportunity_screen.dart';
 import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart';
 import 'package:y2y/features/Opportunities/provider/delete_opportunity_provider.dart';
 
@@ -291,7 +292,37 @@ class _MyOpportunityScreenState extends State<MyOpportunityScreen> {
                         width: 48,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditOpportunityScreen(
+                                      opportunityId: widget.myOpportunity.id??"",
+                                          imgPath: widget.myOpportunity.image,
+                                          link: widget.myOpportunity.link ?? "",
+                                          requirementscontroller: widget
+                                                  .myOpportunity.requirements ??
+                                              "",
+                                          applicationdeadline:
+                                              DateFormat('MMMM d, yyyy').format(
+                                                  widget.myOpportunity.deadline!
+                                                      .toLocal()),
+                                          company:
+                                              widget.myOpportunity.company ??
+                                                  "",
+                                          description: widget
+                                                  .myOpportunity.description ??
+                                              "",
+                                          duration:
+                                              widget.myOpportunity.duration ??
+                                                  "",
+                                          responsibilities: widget.myOpportunity
+                                                  .responsibilities ??
+                                              "",
+                                          title:
+                                              widget.myOpportunity.title ?? "",
+                                        )));
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.all(0), // يمنع المساحة الزايدة
                             backgroundColor: Color(0xffB3D7ED),

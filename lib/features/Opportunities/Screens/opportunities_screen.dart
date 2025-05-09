@@ -346,148 +346,141 @@ class _OpportunitiesState extends State<Opportunities> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              // زر TRUST
                               GestureDetector(
                                 onTap: () async {
                                   final reactProvider =
                                       Provider.of<GetAllReactsProvider>(context,
                                           listen: false);
-
-                                  // التحقق من نوع الرياكت الحالي
                                   String currentReact =
                                       localUserReacts[opportunity.id ?? ''] ??
                                           '';
                                   bool success = false;
 
                                   if (currentReact == 'trusted') {
-                                    // إذا كان الرياكت موجودًا، قم بإزالته من الـ API
+                                    // إرسال "remove" لإزالة التفاعل
                                     success = await reactProvider.makeReact(
                                         opportunity.id ?? '', 'remove');
-                                    if (success) {
-                                      // إذا تم إزالة الرياكت بنجاح من الـ API
-                                      setState(() {
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            ''; // إزالة الرياكت من البيانات المحلية
-                                        reactColors[opportunity.id ?? ''] =
-                                            'blue'; // إعادة تعيين اللون إلى الأزرق
-                                      });
-                                    }
-                                  } else if (currentReact == 'untrusted') {
-                                    // إذا كان الرياكت غير موثوق به، نقوم بإزالته أيضًا
-                                    success = await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'remove');
-                                    if (success) {
-                                      // إذا تم إزالة الرياكت بنجاح من الـ API
-                                      setState(() {
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            ''; // إزالة الرياكت من البيانات المحلية
-                                        reactColors[opportunity.id ?? ''] =
-                                            'blue'; // إعادة تعيين اللون إلى الأزرق
-                                      });
-                                    }
                                   } else {
-                                    // إذا لم يكن هناك أي تفاعل سابق، أضف تفاعل موثوق
+                                    // إضافة التفاعل "trusted"
                                     success = await reactProvider.makeReact(
                                         opportunity.id ?? '', 'trusted');
-                                    if (success) {
-                                      // إذا تم إضافة الرياكت بنجاح من الـ API
-                                      setState(() {
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            'trusted'; // إضافة الرياكت إلى البيانات المحلية
-                                        reactColors[opportunity.id ?? ''] =
-                                            'green'; // تعيين اللون إلى الأخضر
-                                      });
-                                    }
                                   }
 
-                                  // إذا كانت العملية ناجحة (تم إضافة أو إزالة الرياكت)
                                   if (success) {
                                     final updatedReacts = await reactProvider
                                         .fetchReacts(opportunity.id ?? '');
                                     if (!mounted) return;
+
                                     setState(() {
+                                      if (currentReact == 'trusted') {
+                                        // إذا كان التفاعل الحالي هو "trusted"، إزالته
+                                        localUserReacts[opportunity.id ?? ''] =
+                                            '';
+                                        reactColors[opportunity.id ?? ''] =
+                                            'blue'; // تغيير اللون إلى الأزرق بعد الإزالة
+                                      } else {
+                                        // إذا لم يكن هناك تفاعل "trusted"، إضافته
+                                        localUserReacts[opportunity.id ?? ''] =
+                                            'trusted';
+                                        reactColors[opportunity.id ?? ''] =
+                                            'green'; // تغيير اللون إلى الأخضر بعد الإضافة
+                                      }
+
                                       opportunityReacts[opportunity.id ?? ''] =
                                           updatedReacts ?? [];
                                     });
                                   } else {
-                                    // في حالة فشل العملية في الـ API، لا نقوم بتغيير الكلمة أو اللون
                                     print(
-                                        'Error: Unable to process react action.');
+                                        "❌ Error: Failed to modify react successfully.");
                                   }
                                 },
                                 child: Text(
                                   localUserReacts[opportunity.id ?? ''] ==
                                           'trusted'
                                       ? 'Trusted $trustCount'
-                                      : localUserReacts[opportunity.id ?? ''] ==
-                                              'untrusted'
-                                          ? 'Untrusted $unTrustCount'
-                                          : 'Trust $trustCount',
+                                      : 'Trust $trustCount',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: reactColors[opportunity.id ?? ''] ==
-                                            'green'
-                                        ? Colors.green
-                                        : reactColors[opportunity.id ?? ''] ==
-                                                'red'
-                                            ? Colors.red
-                                            : cornflowerblue, // اللون سيتم تحديده بناءً على حالة الرياكت
                                     fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.w700,
+                                    color:
+                                        localUserReacts[opportunity.id ?? ''] ==
+                                                'trusted'
+                                            ? Colors.green
+                                            : cornflowerblue,
                                   ),
                                 ),
                               ),
+
+                              // زر UNTRUST
                               GestureDetector(
                                 onTap: () async {
                                   final reactProvider =
                                       Provider.of<GetAllReactsProvider>(context,
                                           listen: false);
-
-                                  if (userReact == 'untrusted') {
-                                    await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'remove');
-
-                                    setState(() {
-                                      localUserReacts[opportunity.id ?? ''] =
+                                  String currentReact =
+                                      localUserReacts[opportunity.id ?? ''] ??
                                           '';
-                                      reactColors[opportunity.id ?? ''] =
-                                          'blue';
-                                    });
-                                  } else {
-                                    await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'untrusted');
+                                  bool success = false;
 
-                                    setState(() {
-                                      localUserReacts[opportunity.id ?? ''] =
-                                          'untrusted';
-                                      reactColors[opportunity.id ?? ''] = 'red';
-                                    });
+                                  if (currentReact == 'untrusted') {
+                                    // إرسال "remove" لإزالة التفاعل
+                                    success = await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'remove');
+                                  } else {
+                                    // إضافة التفاعل "untrusted"
+                                    success = await reactProvider.makeReact(
+                                        opportunity.id ?? '', 'untrusted');
                                   }
 
-                                  final updatedReacts = await reactProvider
-                                      .fetchReacts(opportunity.id ?? '');
-                                  if (!mounted) return;
-                                  setState(() {
-                                    opportunityReacts[opportunity.id ?? ''] =
-                                        updatedReacts ?? [];
-                                  });
+                                  if (success) {
+                                    final updatedReacts = await reactProvider
+                                        .fetchReacts(opportunity.id ?? '');
+                                    if (!mounted) return;
+
+                                    setState(() {
+                                      if (currentReact == 'untrusted') {
+                                        // إذا كان التفاعل الحالي هو "untrusted"، إزالته
+                                        localUserReacts[opportunity.id ?? ''] =
+                                            '';
+                                        reactColors[opportunity.id ?? ''] =
+                                            'blue'; // تغيير اللون إلى الأزرق بعد الإزالة
+                                      } else {
+                                        // إذا لم يكن هناك تفاعل "untrusted"، إضافته
+                                        localUserReacts[opportunity.id ?? ''] =
+                                            'untrusted';
+                                        reactColors[opportunity.id ?? ''] =
+                                            'red'; // تغيير اللون إلى الأحمر بعد الإضافة
+                                      }
+
+                                      opportunityReacts[opportunity.id ?? ''] =
+                                          updatedReacts ?? [];
+                                    });
+                                  } else {
+                                    print(
+                                        "❌ Error: Failed to modify react successfully.");
+                                  }
                                 },
                                 child: Text(
-                                  userReact == 'untrusted'
+                                  localUserReacts[opportunity.id ?? ''] ==
+                                          'untrusted'
                                       ? 'Untrusted $unTrustCount'
                                       : 'UnTrust $unTrustCount',
                                   style: TextStyle(
-                                    fontFamily: 'Montserrat',
                                     fontSize: 16,
-                                    color: reactColors[opportunity.id ?? ''] ==
-                                            'red'
-                                        ? Colors.red
-                                        : cornflowerblue,
+                                    fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.w700,
+                                    color:
+                                        localUserReacts[opportunity.id ?? ''] ==
+                                                'untrusted'
+                                            ? Colors.red
+                                            : cornflowerblue,
                                   ),
                                 ),
                               ),
                             ],
-                          ),
+                          )
                         ],
                       ),
                     ),

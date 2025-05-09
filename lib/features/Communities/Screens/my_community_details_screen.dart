@@ -30,6 +30,7 @@ class MyCommunityDetailsScreen extends StatefulWidget {
 class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
   bool showAllRequests = false;
   final dateFormat = DateFormat('yyyy-MM-dd');
+  final dateFormatt = DateFormat(' h:mm a');
 
   late Future<UserDetailsModel> _userDetailsFuture;
   @override
@@ -621,11 +622,50 @@ class _MyCommunityDetailsScreenState extends State<MyCommunityDetailsScreen> {
                               height: 48,
                               child: ElevatedButton(
                                 onPressed: () {
+                                  final startDateTime = DateTime.parse(widget
+                                      .myCommunity.date!.startDate
+                                      .toString());
+                                  final endDateTime = DateTime.parse(widget
+                                      .myCommunity.date!.endDate
+                                      .toString());
+
+                                  final startAtTime = TimeOfDay(
+                                      hour: startDateTime.hour,
+                                      minute: startDateTime.minute);
+                                  final endAtTime = TimeOfDay(
+                                      hour: endDateTime.hour,
+                                      minute: endDateTime.minute);
+
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             EditCommunityScreen(
+                                              state: widget.myCommunity.location
+                                                      ?.state ??
+                                                  "",
+                                              communityId:
+                                                  widget.myCommunity.id ?? '',
+                                              subcCategory: widget.myCommunity
+                                                      .subcategory?.name ??
+                                                  '',
+                                              category: widget.myCommunity
+                                                      .category?.name ??
+                                                  '',
+                                              tyeps: widget.myCommunity.types
+                                                      ?.join(', ') ??
+                                                  '',
+                                              startAt: startAtTime,
+                                              endAt: endAtTime,
+                                              limitOfUsers: int.parse(widget
+                                                  .myCommunity.limitOfUsers
+                                                  .toString()),
+                                              street: widget.myCommunity
+                                                      .location?.street ??
+                                                  '',
+                                              city: widget.myCommunity.location
+                                                      ?.city ??
+                                                  "",
                                               imgPath:
                                                   widget.myCommunity.image ??
                                                       "",

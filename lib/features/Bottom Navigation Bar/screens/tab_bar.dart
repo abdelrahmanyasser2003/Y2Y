@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/features/Communities/Screens/communities_screen.dart';
-import 'package:y2y/features/Communities/provider/community_provider.dart';
-
 import 'package:y2y/features/Opportunities/Screens/opportunities_screen.dart';
 import 'package:y2y/features/Search/Screens/search_screen.dart';
 import 'package:y2y/features/Settings/screens/settings_overview_screen.dart';
