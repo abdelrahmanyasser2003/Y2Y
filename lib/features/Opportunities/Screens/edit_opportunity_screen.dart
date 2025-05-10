@@ -200,6 +200,7 @@ class _EditOpportunityScreenState extends State<EditOpportunityScreen> {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     final provider = Provider.of<UpdateOpportunityProvider>(context);
     return Scaffold(
@@ -387,12 +388,6 @@ class _EditOpportunityScreenState extends State<EditOpportunityScreen> {
               ),
               hieghtspace(hieght: 5),
               TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Birth Date';
-                  }
-                  return null;
-                },
                 controller: applicationdeadlinecontroller,
                 cursorColor: Colors.black,
                 keyboardType: TextInputType.text,

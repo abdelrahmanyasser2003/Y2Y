@@ -39,11 +39,24 @@ class _NewopportunitieState extends State<Newopportunitie> {
     });
   }
 
-  Future _selectdate(BuildContext context) async {
+  Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2026),
+      firstDate: DateTime(1990),
+      lastDate: DateTime(2025),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData().copyWith(
+            colorScheme: ColorScheme.light(
+              surface: cornflowerblue,
+              primary: white,
+              onPrimary: cornflowerblue,
+              onSurface: white,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -246,6 +259,12 @@ class _NewopportunitieState extends State<Newopportunitie> {
                 height: 5,
               ),
               TextFormFieldWidget(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter opportunity link';
+                  }
+                  return null;
+                },
                 hintText: "opportunity link",
                 controller: linkcontroller,
                 textInputAction: TextInputAction.next,
@@ -447,7 +466,7 @@ class _NewopportunitieState extends State<Newopportunitie> {
                 ),
                 readOnly: true,
                 onTap: () {
-                  _selectdate(context);
+                  _selectDate();
                 },
               ),
               SizedBox(

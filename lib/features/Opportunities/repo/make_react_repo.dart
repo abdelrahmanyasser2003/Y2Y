@@ -17,7 +17,6 @@ class MakeReactRepo {
 
       print('✅ Sending $reactType to API for opportunity ID: $opportunityId');
 
-      // إرسال طلب API لتحديث التفاعل
       final response = await DioHelper().putRequest(
         endPoint:
             '${ApiEndpoints.baseUrl}${ApiEndpoints.createAndGetALLOpportunitiesEndpoint}/${ApiEndpoints.getALLReactsEndpoint}/$opportunityId',
@@ -35,11 +34,11 @@ class MakeReactRepo {
 
       if (response.statusCode == 200) {
         print('✅ React made successfully: ${response.data}');
-        return true; // العملية نجحت
+        return true;
       } else {
         print(
             '❌ Error: Status Code ${response.statusCode}, Response Data: ${response.data}');
-        return false; // العملية فشلت
+        return false;
       }
     } catch (e) {
       if (e is DioException) {
@@ -47,7 +46,7 @@ class MakeReactRepo {
       } else {
         print('❌ Error: $e');
       }
-      return false; // حدث خطأ
+      return false;
     }
   }
 
@@ -61,8 +60,6 @@ class MakeReactRepo {
         return null;
       }
 
-      print('✅ Fetching reacts for opportunity ID: $opportunityId');
-
       final response = await DioHelper().getRequest(
         endPoint:
             '${ApiEndpoints.baseUrl}${ApiEndpoints.createAndGetALLOpportunitiesEndpoint}/${ApiEndpoints.getALLReactsEndpoint}/$opportunityId',
@@ -73,27 +70,16 @@ class MakeReactRepo {
         ),
       );
 
-      print('Response status: ${response.statusCode}');
-
       if (response.statusCode == 200) {
-        print('✅ Reacts fetched successfully: ${response.data}');
-        // تحويل البيانات إلى List<React>
-        final List<React> reacts = (response.data as List)
-            .map((react) => React.fromJson(react))
-            .toList();
-        return reacts;
+        final data = response.data as List;
+        return data.map((item) => React.fromJson(item)).toList();
       } else {
-        print(
-            '❌ Error: Status Code ${response.statusCode}, Response Data: ${response.data}');
-        return null; // فشل في جلب البيانات
+        print('❌ Failed to fetch reacts: ${response.statusCode}');
+        return null;
       }
     } catch (e) {
-      if (e is DioException) {
-        print('❌ DioError: ${e.response?.statusCode}, ${e.response?.data}');
-      } else {
-        print('❌ Error: $e');
-      }
-      return null; // حدث خطأ أثناء جلب التفاعلات
+      print('❌ Exception while fetching reacts: $e');
+      return null;
     }
   }
 }

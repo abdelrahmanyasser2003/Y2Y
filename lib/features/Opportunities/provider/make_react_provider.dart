@@ -3,52 +3,51 @@ import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart
 import 'package:y2y/features/Opportunities/repo/make_react_repo.dart';
 
 class MakeReactProvider with ChangeNotifier {
+  final MakeReactRepo _reactRepo = MakeReactRepo();
+
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Map<String, List<React>> opportunityReacts = {}; // بيانات التفاعل للمجتمع
+  // خريطة تخزن التفاعلات لكل فرصة
+  Map<String, List<React>> opportunityReacts = {};
+  
 
-  // دالة للتفاعل أو إزالة التفاعل
-  Future<bool> makeOrRemoveReact(String opportunityId, String reactType) async {
+  /// 🔁 دالة للتبديل بين تفاعل وإزالته
+  Future<bool> makeOrRemoveReact({
+    required String opportunityId,
+    required String reactType,
+    required String userId,
+  }) async {
     try {
       _isLoading = true;
       notifyListeners();
 
       bool success = false;
 
-      if (opportunityReacts.containsKey(opportunityId)) {
-        final reacts = opportunityReacts[opportunityId]!;
+      final currentReacts = opportunityReacts[opportunityId] ?? [];
 
-        final existingReact = reacts.firstWhere(
-          (react) => react.user == 'userId' && react.react == reactType,
-          orElse: () => React(user: '', react: ''),
-        );
+      final existingReact = currentReacts.firstWhere(
+        (react) => react.user == userId && react.react == reactType,
+        orElse: () => React(user: '', react: ''),
+      );
 
-        if (existingReact.user!.isNotEmpty) {
-          // إذا كان الرياكت موجودًا، قم بإزالته من الـ API
-          success = await MakeReactRepo().makeReact(opportunityId, 'remove');
-          if (success) {
-            reacts.removeWhere(
-              (react) => react.user == 'userId' && react.react == reactType,
-            );
-            opportunityReacts[opportunityId] = reacts;
-          }
-        } else {
-          // إضافة رياكت جديد
-          success = await MakeReactRepo().makeReact(opportunityId, reactType);
-          if (success) {
-            reacts.add(React(user: 'userId', react: reactType));
-            opportunityReacts[opportunityId] = reacts;
-          }
+      if (existingReact.user!.isNotEmpty) {
+        // ✅ موجود بالفعل، نرسل طلب إزالة
+        success = await _reactRepo.makeReact(opportunityId, 'remove');
+        if (success) {
+          currentReacts.removeWhere(
+              (react) => react.user == userId && react.react == reactType);
+          opportunityReacts[opportunityId] = currentReacts;
         }
       } else {
-        // إضافة أول رياكت على الفرصة دي
-        success = await MakeReactRepo().makeReact(opportunityId, reactType);
+        // ➕ نضيف التفاعل
+        success = await _reactRepo.makeReact(opportunityId, reactType);
         if (success) {
-          opportunityReacts[opportunityId] = [React(user: 'userId', react: reactType)];
+          currentReacts.add(React(user: userId, react: reactType));
+          opportunityReacts[opportunityId] = currentReacts;
         }
       }
 
@@ -64,14 +63,25 @@ class MakeReactProvider with ChangeNotifier {
     }
   }
 
-  // دالة لجلب التفاعلات الخاصة بكل فرصة
+  /// 📥 جلب التفاعلات الخاصة بفرصة واحدة
   Future<void> fetchReacts(String opportunityId) async {
     try {
-      final reacts = await MakeReactRepo().fetchReacts(opportunityId);
+      final reacts = await _reactRepo.fetchReacts(opportunityId);
       opportunityReacts[opportunityId] = reacts ?? [];
       notifyListeners();
     } catch (e) {
       print('❌ Error fetching reacts: $e');
     }
+  }
+
+  /// ℹ️ هل قام المستخدم بهذا التفاعل على الفرصة؟
+  bool hasReacted({
+    required String opportunityId,
+    required String reactType,
+    required String userId,
+  }) {
+    final reacts = opportunityReacts[opportunityId] ?? [];
+    return reacts
+        .any((react) => react.user == userId && react.react == reactType);
   }
 }

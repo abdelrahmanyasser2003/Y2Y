@@ -8,7 +8,7 @@ import 'package:y2y/features/user/widges/user_details_container_widget.dart';
 
 class UserDetialsMembersScreen extends StatefulWidget {
   const UserDetialsMembersScreen({super.key, required this.members});
-  final Volunteer members;
+  final Members members;
 
   @override
   State<UserDetialsMembersScreen> createState() =>

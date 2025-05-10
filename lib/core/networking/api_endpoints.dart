@@ -20,6 +20,8 @@ class ApiEndpoints {
   // static const String deleteopportunityEndpoint = "opportunity";
 
   static const String getALLCommunitiesEndpoint = "community";
+  static const String getSpecificCommunitiesEndpoint = "specific";
+
   static const String joinRequestCommuntiyCommunitiesEndpoint = "join-request";
   static const String cancelJoinCommuntiyCommunitiesEndpoint = "cancel-join";
   static const String handleJoinRequestEndpoint = "handle-request";

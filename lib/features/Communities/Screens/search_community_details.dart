@@ -7,7 +7,7 @@ import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
+import 'package:y2y/features/Communities/model/get_spacific_community_model.dart';
 import 'package:y2y/features/Communities/provider/join_community_provider.dart';
 import 'package:y2y/features/Communities/repo/cancel_join_repo.dart';
 import 'package:y2y/features/Communities/repo/community_details_repo.dart';
@@ -15,18 +15,18 @@ import 'package:y2y/features/Communities/repo/join_community_repo.dart';
 import 'package:y2y/features/Communities/widges/listrile_community_widget.dart';
 import 'package:y2y/features/Communities/widges/listtile_volunteer_widget.dart';
 import 'package:y2y/features/user/models/user_detils_model.dart';
-import 'package:y2y/features/user/screens/user_detials_members_screen.dart';
 
-class CommunityDetails extends StatefulWidget {
-  final GetAllCommunitiesModel community;
-
-  const CommunityDetails({super.key, required this.community});
+class SearchCommunityDetails extends StatefulWidget {
+  const SearchCommunityDetails(
+      {super.key, required this.communitySearch, required this.communityId});
+  final GetSpacificCommunityModel communitySearch;
+  final GetSpacificCommunityModel communityId;
 
   @override
-  State<CommunityDetails> createState() => _CommunityDetailsState();
+  State<SearchCommunityDetails> createState() => _SearchCommunityDetailsState();
 }
 
-class _CommunityDetailsState extends State<CommunityDetails> {
+class _SearchCommunityDetailsState extends State<SearchCommunityDetails> {
   late Future<UserDetailsModel> _userDetailsFuture;
   bool hasRequested = false;
   bool showAllRequests = false;
@@ -40,8 +40,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final Volunteer? volunteer = widget.community.volunteer;
-    final List<Members> members = widget.community.members ?? [];
+    final volunteer = widget.communitySearch.volunteer;
+    final members = widget.communitySearch.members ?? [];
     final displayedRequests =
         showAllRequests ? members : members.take(2).toList();
 
@@ -78,10 +78,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             CircleAvatar(
                               radius: 40,
                               backgroundImage: (widget
-                                          .community.image?.isNotEmpty ??
+                                          .communitySearch.image?.isNotEmpty ??
                                       false)
                                   ? NetworkImage(
-                                      '${ApiEndpoints.baseUrl}${widget.community.image?.replaceAll("\\", "/")}')
+                                      '${ApiEndpoints.baseUrl}${widget.communitySearch.image?.replaceAll("\\", "/")}')
                                   : AssetImage(
                                           'assets/images/default_community.png')
                                       as ImageProvider,
@@ -92,7 +92,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.community.name ?? '',
+                                    widget.communitySearch.name ?? '',
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: cornflowerblue,
@@ -102,7 +102,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    widget.community.desc ?? '',
+                                    widget.communitySearch.desc ?? '',
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: cornflowerblue,
@@ -147,7 +147,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.category?.name ?? 'Unknown',
+                                widget.communitySearch.category?.name ??
+                                    'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -173,7 +174,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: cornflowerblue),
                               child: Text(
-                                widget.community.subcategory!.name ?? 'Unknown',
+                                widget.communitySearch.subcategory!.name ??
+                                    'Unknown',
                                 style: const TextStyle(
                                   fontFamily: "Roboto",
                                   fontWeight: FontWeight.w800,
@@ -197,7 +199,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 55),
                             Text(
-                              widget.community.numberOfMembers?.toString() ??
+                              widget.communitySearch.numberOfMembers
+                                      ?.toString() ??
                                   '0',
                               style: TextStyle(
                                 fontSize: 11,
@@ -218,7 +221,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             ),
                             Widthspace(width: 65),
                             Text(
-                              widget.community.location!.state ?? 'Unknown',
+                              widget.communitySearch.location!.state ??
+                                  'Unknown',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: cornflowerblue,
@@ -262,7 +266,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.startDate!
+                                          .communitySearch.date!.startDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -278,7 +282,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.community.volunteer?.userName ?? "",
+                                  widget.communitySearch.volunteer?.userName ??
+                                      "",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: cornflowerblue,
@@ -300,7 +305,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 Text(
                                   DateFormat('E dd/MM/yyyy').format(
                                       DateTime.parse(widget
-                                          .community.date!.endDate!
+                                          .communitySearch.date!.endDate!
                                           .toString())),
                                   style: TextStyle(
                                     fontSize: 13,
@@ -338,7 +343,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.first ??
+                                      widget.communitySearch.date?.schedule
+                                              ?.first ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -359,7 +365,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.startDate
+                                                .communitySearch.date?.startDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -377,7 +383,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   children: [
                                     hieghtspace(hieght: 5),
                                     Text(
-                                      widget.community.date?.schedule?.last ??
+                                      widget.communitySearch.date?.schedule
+                                              ?.last ??
                                           '',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -398,7 +405,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     Text(
                                       DateFormat(' h:mm a').format(
                                         DateTime.parse(widget
-                                                .community.date?.endDate
+                                                .communitySearch.date?.endDate
                                                 .toString() ??
                                             ''),
                                       ),
@@ -430,7 +437,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.communitySearch.location?.city ??
+                                          '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -454,7 +462,8 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     ),
                                     Widthspace(width: 3),
                                     Text(
-                                      widget.community.location?.city ?? '',
+                                      widget.communitySearch.location?.city ??
+                                          '',
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: cornflowerblue,
@@ -485,7 +494,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                         ),
                         hieghtspace(hieght: 5),
                         Text(
-                          widget.community.roles ?? '',
+                          widget.communitySearch.roles ?? '',
                           style: TextStyle(
                             fontSize: 13,
                             color: cornflowerblue,
@@ -520,7 +529,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               child: Text(
                                 showAllRequests
                                     ? "View less"
-                                    : "View all (${widget.community.members?.length ?? 0})",
+                                    : "View all (${widget.communitySearch.members?.length ?? 0})",
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: cornflowerblue,
@@ -543,14 +552,14 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                 title:
                                     '${volunteer.firstName ?? ''} ${volunteer.lastName ?? ''}',
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          UserDetialsMembersScreen(
-                                              members: volunteer as Members),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) =>
+                                  //         UserDetialsMembersScreen(
+                                  //             members: volunteer),
+                                  //   ),
+                                  // );
                                 },
                               ),
                             ],
@@ -565,8 +574,10 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: displayedRequests.length,
                               itemBuilder: (context, index) {
-                                final member = displayedRequests[index];
+                                print(
+                                    'عدد العاضاء: ${displayedRequests.length}');
 
+                                final member = displayedRequests[index];
                                 return ListrileCommunityWidget(
                                   backgroundImage: NetworkImage(
                                     '${ApiEndpoints.baseUrl}${member.profileImage?.replaceAll("\\", "/") ?? ""}',
@@ -574,15 +585,15 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   title:
                                       '${member.firstName ?? ''} ${member.lastName ?? ''}',
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            UserDetialsMembersScreen(
-                                          members: member,
-                                        ),
-                                      ),
-                                    );
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) =>
+                                    //         UserDetialsMembersScreen(
+                                    //       members: member,
+                                    //     ),
+                                    //   ),
+                                    // );
                                   },
                                 );
                               },
@@ -595,7 +606,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                             height: 55,
                             child: ElevatedButton(
                               onPressed: () async {
-                                if (widget.community.id == null) {
+                                if (widget.communitySearch.id == null) {
                                   showAnimatedSnackDialog(
                                     context,
                                     type: AnimatedSnackBarType.error,
@@ -642,7 +653,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   if (shouldCancel == true) {
                                     // إلغاء الطلب عبر الـ API
                                     await CancelJoinRepo().cancelJoinRequest(
-                                      widget.community.id?.toString() ??
+                                      widget.communitySearch.id?.toString() ??
                                           '', // التأكد أن id ليس null
                                       context,
                                     );
@@ -656,7 +667,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                   // تحقق من provider.isLoading قبل استخدامه
                                   await JoinCommunityRepo()
                                       .sendRequestToCommunity(
-                                    widget.community.id?.toString() ??
+                                    widget.communitySearch.id?.toString() ??
                                         '', // التأكد أن id ليس null
                                     context,
                                   );

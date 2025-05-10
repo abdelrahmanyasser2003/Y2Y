@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
-import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/features/Opportunities/Screens/my_opportunity_screen.dart';
 import 'package:y2y/features/Opportunities/Screens/new_opportunitie_screen.dart';
-import 'package:y2y/features/Opportunities/Screens/opportunities_details_screen.dart';
-import 'package:y2y/features/Opportunities/provider/get_all_reacts_provider.dart';
 import 'package:y2y/features/Opportunities/model/get_all_opportunties_model.dart';
 import 'package:y2y/features/Opportunities/provider/get_all_opportunities_provider.dart';
+import 'package:y2y/features/Opportunities/provider/get_all_reacts_provider.dart';
 import 'package:y2y/features/Opportunities/provider/get_opportunities_of_user_provider.dart';
-import 'package:y2y/features/Opportunities/provider/make_react_provider.dart';
+import 'package:y2y/features/Opportunities/repo/make_react_repo.dart';
+import 'package:y2y/features/user/models/user_model.dart';
+import 'package:y2y/features/user/repo/user_repo.dart';
 
 class Opportunities extends StatefulWidget {
   const Opportunities({super.key});
@@ -21,57 +21,114 @@ class Opportunities extends StatefulWidget {
 
 class _OpportunitiesState extends State<Opportunities> {
   Map<String, List<React>> opportunityReacts = {};
-  Map<String, String> localUserReacts = {};
-  Map<String, String> reactColors = {};
-  Map<String, int> reactCounts = {}; // لإضافة عدد الردود
-  String userId = '';
   bool showAllMyOpportunities = false;
   bool showAllAllOpportunities = false;
+  String userId = '';
+  bool isLoadingUser = false;
+  UserModel? currentUser; // إضافة متغير لتخزين بيانات المستخدم
+  bool isVolunteer = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final oppProvider =
-          Provider.of<GetAllOpportunitiesProvider>(context, listen: false);
-      final reactProvider =
-          Provider.of<GetAllReactsProvider>(context, listen: false);
-      final userOpportunityProvider =
-          Provider.of<GetOpportunitiesOfUserProvider>(context, listen: false);
-
-      await userOpportunityProvider
-          .fetchUserOpportunities(); // جلب الفرص للمستخدم
-      await oppProvider.fetchOpportunities(); // جلب الفرص العامة
-
-      for (var opportunity in oppProvider.opportunities) {
-        final reacts = await reactProvider
-            .fetchReacts(opportunity.id ?? ''); // جلب التفاعلات
-        if (!mounted) return;
-        setState(() {
-          opportunityReacts[opportunity.id ?? ''] = reacts ?? [];
-          reactCounts[opportunity.id ?? ''] = reacts?.length ?? 0; // حساب العدد
-          final userReact = reacts?.firstWhere(
-            (r) => r.user == userId,
-            orElse: () => React(user: '', react: ''),
-          );
-          localUserReacts[opportunity.id ?? ''] = userReact?.react ?? '';
-          reactColors[opportunity.id ?? ''] = userReact?.react == 'trusted'
-              ? 'green'
-              : userReact?.react == 'untrusted'
-                  ? 'red'
-                  : 'blue';
-        });
-      }
+      await _loadUserData();
+      if (userId.isEmpty) return;
+      await _loadOpportunitiesData();
     });
   }
 
+  Future<void> _loadUserData() async {
+    setState(() => isLoadingUser = true);
+    try {
+      final userRepo = UserRepo();
+      final userData = await userRepo.getProfileData();
+      setState(() {
+        currentUser = userData;
+        userId = userData.id ?? '';
+        isVolunteer = userData.roles?.contains("volunteer") ?? false;
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    } finally {
+      setState(() => isLoadingUser = false);
+    }
+  }
+
+  Future<void> _loadOpportunitiesData() async {
+    final oppProvider =
+        Provider.of<GetAllOpportunitiesProvider>(context, listen: false);
+    final reactProvider =
+        Provider.of<GetAllReactsProvider>(context, listen: false);
+    final userOpportunityProvider =
+        Provider.of<GetOpportunitiesOfUserProvider>(context, listen: false);
+
+    await userOpportunityProvider.fetchUserOpportunities();
+    await oppProvider.fetchOpportunities();
+
+    for (var opportunity in oppProvider.opportunities) {
+      final reacts = await reactProvider.fetchReacts(opportunity.id ?? '');
+      if (!mounted) return;
+      setState(() {
+        opportunityReacts[opportunity.id ?? ''] = reacts ?? [];
+      });
+    }
+  }
+
   int getReactCount(List<React> reacts, String reactType) {
-    // تأكد من أن 'reacts' ليست فارغة أو null، ثم قم بحساب العدد
     return reacts.where((react) => react.react == reactType).length;
+  }
+
+  Color getReactColor(String opportunityId, String reactType) {
+    final reacts = opportunityReacts[opportunityId] ?? [];
+
+    final userReact = reacts.firstWhere(
+      (r) => r.user == userId,
+      orElse: () => React(react: ''),
+    );
+
+    if (userReact.react == reactType) {
+      return reactType == 'trusted' ? green : Colors.red;
+    }
+
+    return cornflowerblue;
+  }
+
+  Future<void> _updateReact(String opportunityId, String reactType) async {
+    await MakeReactRepo().makeReact(opportunityId, reactType);
+    final reacts =
+        await Provider.of<GetAllReactsProvider>(context, listen: false)
+            .fetchReacts(opportunityId);
+
+    if (!mounted) return;
+    setState(() {
+      opportunityReacts[opportunityId] = reacts ?? [];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoadingUser) {
+      return const Scaffold(
+        backgroundColor: cornflowerblue,
+        body: Center(
+          child: CircularProgressIndicator(color: purple),
+        ),
+      );
+    }
+
+    if (userId.isEmpty) {
+      return Scaffold(
+        backgroundColor: cornflowerblue,
+        body: Center(
+          child: Text(
+            'لا يمكن تحميل بيانات المستخدم',
+            style: TextStyle(color: white),
+          ),
+        ),
+      );
+    }
+
     final opportunitiesProvider =
         Provider.of<GetAllOpportunitiesProvider>(context);
     final myOpportunitiesProvider =
@@ -87,26 +144,30 @@ class _OpportunitiesState extends State<Opportunities> {
     }
 
     final myOpportunities = myOpportunitiesProvider.opportunities;
+    final allOpportunities = opportunitiesProvider.opportunities;
 
     return Scaffold(
       backgroundColor: cornflowerblue,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Newopportunitie()),
-          );
-        },
-        backgroundColor: purple,
-        child: Image.asset('assets/img/Vector.png'),
-      ),
+      floatingActionButton: isVolunteer
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Newopportunitie(),
+                  ),
+                );
+              },
+              backgroundColor: purple,
+              child: Image.asset('assets/img/Vector.png'),
+            )
+          : null,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🟣 قسم "My Opportunities"
               if (myOpportunities.isNotEmpty) ...[
                 const Text(
                   'My Opportunities',
@@ -131,10 +192,12 @@ class _OpportunitiesState extends State<Opportunities> {
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MyOpportunityScreen(
-                                    myOpportunity: opportunity)));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MyOpportunityScreen(myOpportunity: opportunity),
+                          ),
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
@@ -185,28 +248,31 @@ class _OpportunitiesState extends State<Opportunities> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                  onTap: () async {},
+                                  onTap: () async {
+                                    await _updateReact(
+                                        opportunity.id ?? '', 'trusted');
+                                  },
                                   child: Text(
-                                    'trust (${getReactCount(opportunityReacts[opportunity.id ?? ''] ?? [], 'trusted')})',
+                                    'trusted (${getReactCount(opportunityReacts[opportunity.id ?? ''] ?? [], 'trusted')})',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: (localUserReacts[
-                                                  opportunity.id ?? ''] ==
-                                              'trusted')
-                                          ? Colors.green
-                                          : cornflowerblue,
+                                      color: getReactColor(
+                                          opportunity.id ?? '', 'trusted'),
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {},
+                                  onTap: () async {
+                                    await _updateReact(
+                                        opportunity.id ?? '', 'untrusted');
+                                  },
                                   child: Text(
-                                    'untrust (${getReactCount(opportunity.react ?? [], 'untrusted')})',
+                                    'untrusted (${getReactCount(opportunityReacts[opportunity.id ?? ''] ?? [], 'untrusted')})',
                                     style: TextStyle(
-                                      fontFamily: 'Montserrat',
                                       fontSize: 16,
-                                      color: cornflowerblue,
+                                      color: getReactColor(
+                                          opportunity.id ?? '', 'untrusted'),
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -257,7 +323,7 @@ class _OpportunitiesState extends State<Opportunities> {
                   )
                 ]
               ],
-              hieghtspace(hieght: 10),
+              const SizedBox(height: 10),
               const Text(
                 'All Opportunities',
                 style: TextStyle(
@@ -267,36 +333,26 @@ class _OpportunitiesState extends State<Opportunities> {
                   color: white,
                 ),
               ),
-              hieghtspace(hieght: 10),
+              const SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: showAllAllOpportunities
-                    ? opportunitiesProvider.opportunities.length
-                    : opportunitiesProvider.opportunities.length > 3
+                    ? allOpportunities.length
+                    : allOpportunities.length > 3
                         ? 3
-                        : opportunitiesProvider.opportunities.length,
+                        : allOpportunities.length,
                 itemBuilder: (context, index) {
-                  final opportunity =
-                      opportunitiesProvider.opportunities[index];
-                  final reacts = opportunityReacts[opportunity.id ?? ''] ?? [];
-
-                  int trustCount =
-                      reacts.where((r) => r.react == "trusted").length;
-                  int unTrustCount =
-                      reacts.where((r) => r.react == "untrusted").length;
-
-                  String userReact =
-                      localUserReacts[opportunity.id ?? ''] ?? '';
-                  String reactColor =
-                      reactColors[opportunity.id ?? ''] ?? 'blue';
+                  final opportunity = allOpportunities[index];
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Opportunitiesdetils(
-                                  opportunity: opportunity)));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MyOpportunityScreen(myOpportunity: opportunity),
+                        ),
+                      );
                     },
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 10),
@@ -346,149 +402,45 @@ class _OpportunitiesState extends State<Opportunities> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // زر TRUST
                               GestureDetector(
                                 onTap: () async {
-                                  final reactProvider =
-                                      Provider.of<GetAllReactsProvider>(context,
-                                          listen: false);
-                                  String currentReact =
-                                      localUserReacts[opportunity.id ?? ''] ??
-                                          '';
-                                  bool success = false;
-
-                                  if (currentReact == 'trusted') {
-                                    // إرسال "remove" لإزالة التفاعل
-                                    success = await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'remove');
-                                  } else {
-                                    // إضافة التفاعل "trusted"
-                                    success = await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'trusted');
-                                  }
-
-                                  if (success) {
-                                    final updatedReacts = await reactProvider
-                                        .fetchReacts(opportunity.id ?? '');
-                                    if (!mounted) return;
-
-                                    setState(() {
-                                      if (currentReact == 'trusted') {
-                                        // إذا كان التفاعل الحالي هو "trusted"، إزالته
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            '';
-                                        reactColors[opportunity.id ?? ''] =
-                                            'blue'; // تغيير اللون إلى الأزرق بعد الإزالة
-                                      } else {
-                                        // إذا لم يكن هناك تفاعل "trusted"، إضافته
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            'trusted';
-                                        reactColors[opportunity.id ?? ''] =
-                                            'green'; // تغيير اللون إلى الأخضر بعد الإضافة
-                                      }
-
-                                      opportunityReacts[opportunity.id ?? ''] =
-                                          updatedReacts ?? [];
-                                    });
-                                  } else {
-                                    print(
-                                        "❌ Error: Failed to modify react successfully.");
-                                  }
+                                  await _updateReact(
+                                      opportunity.id ?? '', 'trusted');
                                 },
                                 child: Text(
-                                  localUserReacts[opportunity.id ?? ''] ==
-                                          'trusted'
-                                      ? 'Trusted $trustCount'
-                                      : 'Trust $trustCount',
+                                  'trusted (${getReactCount(opportunityReacts[opportunity.id ?? ''] ?? [], 'trusted')})',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontFamily: 'Montserrat',
+                                    color: getReactColor(
+                                        opportunity.id ?? '', 'trusted'),
                                     fontWeight: FontWeight.w700,
-                                    color:
-                                        localUserReacts[opportunity.id ?? ''] ==
-                                                'trusted'
-                                            ? Colors.green
-                                            : cornflowerblue,
                                   ),
                                 ),
                               ),
-
-                              // زر UNTRUST
                               GestureDetector(
                                 onTap: () async {
-                                  final reactProvider =
-                                      Provider.of<GetAllReactsProvider>(context,
-                                          listen: false);
-                                  String currentReact =
-                                      localUserReacts[opportunity.id ?? ''] ??
-                                          '';
-                                  bool success = false;
-
-                                  if (currentReact == 'untrusted') {
-                                    // إرسال "remove" لإزالة التفاعل
-                                    success = await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'remove');
-                                  } else {
-                                    // إضافة التفاعل "untrusted"
-                                    success = await reactProvider.makeReact(
-                                        opportunity.id ?? '', 'untrusted');
-                                  }
-
-                                  if (success) {
-                                    final updatedReacts = await reactProvider
-                                        .fetchReacts(opportunity.id ?? '');
-                                    if (!mounted) return;
-
-                                    setState(() {
-                                      if (currentReact == 'untrusted') {
-                                        // إذا كان التفاعل الحالي هو "untrusted"، إزالته
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            '';
-                                        reactColors[opportunity.id ?? ''] =
-                                            'blue'; // تغيير اللون إلى الأزرق بعد الإزالة
-                                      } else {
-                                        // إذا لم يكن هناك تفاعل "untrusted"، إضافته
-                                        localUserReacts[opportunity.id ?? ''] =
-                                            'untrusted';
-                                        reactColors[opportunity.id ?? ''] =
-                                            'red'; // تغيير اللون إلى الأحمر بعد الإضافة
-                                      }
-
-                                      opportunityReacts[opportunity.id ?? ''] =
-                                          updatedReacts ?? [];
-                                    });
-                                  } else {
-                                    print(
-                                        "❌ Error: Failed to modify react successfully.");
-                                  }
+                                  await _updateReact(
+                                      opportunity.id ?? '', 'untrusted');
                                 },
                                 child: Text(
-                                  localUserReacts[opportunity.id ?? ''] ==
-                                          'untrusted'
-                                      ? 'Untrusted $unTrustCount'
-                                      : 'UnTrust $unTrustCount',
+                                  'untrusted (${getReactCount(opportunityReacts[opportunity.id ?? ''] ?? [], 'untrusted')})',
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontFamily: 'Montserrat',
+                                    color: getReactColor(
+                                        opportunity.id ?? '', 'untrusted'),
                                     fontWeight: FontWeight.w700,
-                                    color:
-                                        localUserReacts[opportunity.id ?? ''] ==
-                                                'untrusted'
-                                            ? Colors.red
-                                            : cornflowerblue,
                                   ),
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
                   );
                 },
               ),
-              if (!showAllAllOpportunities &&
-                  opportunitiesProvider.opportunities.length > 3) ...[
+              if (!showAllAllOpportunities && allOpportunities.length > 3) ...[
                 Center(
                   child: TextButton(
                     onPressed: () {
