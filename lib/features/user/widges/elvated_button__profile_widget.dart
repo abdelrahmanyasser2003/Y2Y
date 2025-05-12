@@ -8,6 +8,7 @@ class ElvatedButtonPrfileWidget extends StatelessWidget {
       this.fontWeight,
       required this.onPressed,
       this.icon,
+      this.height,
       required this.text,
       this.color,
       this.colorIcon,
@@ -20,18 +21,19 @@ class ElvatedButtonPrfileWidget extends StatelessWidget {
   final Color? color;
   final Color? colorIcon;
   final double? width;
+  final double? height;
   final FontWeight? fontWeight;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
-      height: 41.h,
+      height: height ?? 41.h,
       child: ElevatedButton.icon(
         label: Text(
           text,
           style: TextStyle(
-              fontWeight: fontWeight??FontWeight.w500,
+              fontWeight: fontWeight ?? FontWeight.w500,
               fontSize: fontSize ?? 15.sp,
               color: color,
               fontFamily: "Poppins"),

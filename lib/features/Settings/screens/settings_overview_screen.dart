@@ -13,7 +13,6 @@ import 'package:y2y/features/Settings/screens/privacy_policy_screen.dart';
 import 'package:y2y/features/Settings/screens/send_feedback_screen.dart';
 import 'package:y2y/features/Settings/screens/terms_of_use_screen.dart';
 import 'package:y2y/features/Settings/widges/list_tile_setting_widget.dart';
-import 'package:y2y/features/user/screens/edit_profile_screen.dart';
 import 'package:y2y/features/user/screens/profile_screen.dart';
 
 class SettingScreen extends StatefulWidget {

@@ -1,15 +1,19 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/styling/app_styles.dart';
+import 'package:y2y/core/utils/animated_snack_dialog.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';
 import 'package:y2y/core/widges/spaceing_widges.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
-import 'package:y2y/features/user/provider/edit_profile_provider.dart';
 import 'package:y2y/features/user/provider/get_user_provider.dart';
 import 'package:y2y/features/user/provider/update_user_provider.dart';
 import 'package:y2y/features/user/widges/elvated_button__profile_widget.dart';
@@ -17,8 +21,9 @@ import 'package:y2y/features/user/widges/elvated_button__profile_widget.dart';
 class EditProfileScreen extends StatefulWidget {
   final String education;
   final String skill;
-  final String imgpath;
-  final String name;
+  final dynamic imgPath;
+  final String firstName;
+  final String lastName;
   final String phone;
   final String subname;
   final String bio;
@@ -27,15 +32,18 @@ class EditProfileScreen extends StatefulWidget {
   final String street;
   final String state;
   final String city;
+  final String interests;
 
   const EditProfileScreen({
     super.key,
     required this.education,
+    required this.interests,
     required this.skill,
     required this.phone,
     required this.bio,
-    required this.imgpath,
-    required this.name,
+    required this.imgPath,
+    required this.firstName,
+    required this.lastName,
     required this.subname,
     required this.gender,
     required this.dateOfBirth,
@@ -49,7 +57,6 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // Text Controllers
   late TextEditingController nameController;
   late TextEditingController subnameController;
   late TextEditingController genderController;
@@ -59,6 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController streetController;
   late TextEditingController cityController;
   late TextEditingController bioController;
+  late TextEditingController interestsController;
   late TextEditingController educationController;
   late TextEditingController skillController;
 
@@ -96,17 +104,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String dropdwonvalue = "Gender";
   final List<String> _dropdowngender = ["Gender", "Male", "Femele"];
 
-  String? imgPath;
   bool isEditing = false;
   bool isEditing1 = false;
 
   @override
   void initState() {
     super.initState();
-    imgPath = widget.imgpath; // تحميل الصورة المحفوظة في البروفايل
+    imagePath = widget.imgPath; // تحميل الصورة المحفوظة في البروفايل
 
     // Initialize controllers with the existing user data
-    nameController = TextEditingController(text: widget.name);
+    nameController = TextEditingController(text: '${widget.firstName}');
     subnameController = TextEditingController(text: widget.subname);
     genderController = TextEditingController(text: widget.gender);
     dateController = TextEditingController(text: widget.dateOfBirth);
@@ -117,6 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     bioController = TextEditingController(text: widget.bio);
     educationController = TextEditingController(text: widget.education);
     skillController = TextEditingController(text: widget.skill);
+    interestsController = TextEditingController(text: widget.interests);
   }
 
   @override
@@ -132,6 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     skillController.dispose();
     phoneController.dispose();
     subnameController.dispose();
+    interestsController.dispose();
     super.dispose();
   }
 
@@ -161,38 +170,78 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> uploadImage(ImageSource source) async {
+  dynamic imagePath;
+
+  Future<void> uploadImage2Screen(ImageSource source) async {
     final XFile? pickedImg = await ImagePicker().pickImage(source: source);
     if (pickedImg != null) {
-      // في هذه الحالة سنقوم بتخزين المسار أو الرابط للصورة بدلاً من البايتات
-      String imagePath = pickedImg.path; // الحصول على مسار الصورة
+      Uint8List bytes = await pickedImg.readAsBytes();
       setState(() {
-        imgPath = imagePath; // تخزين المسار في imgPath
+        imagePath = bytes;
       });
-      Navigator.pop(context); // إغلاق المودال بعد اختيار الصورة
     }
   }
 
-  void showImagePicker() {
-    showModalBottomSheet(
-      context: context,
+  Future<File> convertUint8ListToFile(Uint8List data, String filename) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File(path.join(tempDir.path, filename));
+    return await file.writeAsBytes(data);
+  }
+
+  showModel(BuildContext context) {
+    return showModalBottomSheet(
+      context: context, // استخدام BuildContext هنا
       builder: (BuildContext context) {
         return Container(
-          color: skyblue,
-          padding: EdgeInsets.all(10),
-          height: 125.h,
+          color:
+              cornflowerblue, // تغيير skyblue إلى Colors.skyBlue أو أي لون آخر
+          padding: const EdgeInsets.all(10),
+          height: 120,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ListTile(
-                leading: Icon(Icons.camera, size: 30),
-                title: Text("From Camera", style: TextStyle(fontSize: 20.sp)),
-                onTap: () => uploadImage(ImageSource.camera),
+              GestureDetector(
+                onTap: () async {
+                  await uploadImage2Screen(ImageSource.camera);
+                },
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.camera,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Camera",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
-              ListTile(
-                leading: Icon(Icons.photo_outlined, size: 30),
-                title: Text("From Gallery", style: TextStyle(fontSize: 20.sp)),
-                onTap: () => uploadImage(ImageSource.gallery),
+              const SizedBox(
+                height: 22,
+              ),
+              GestureDetector(
+                onTap: () {
+                  uploadImage2Screen(ImageSource.gallery);
+                },
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.photo_outlined,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 11,
+                    ),
+                    Text(
+                      "From Gallery",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
             ],
           ),
@@ -203,7 +252,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final updateUserProvider = Provider.of<UpdateUserProvider>(context);
     final userProvider = Provider.of<GetUserProvider>(context);
+
     return Scaffold(
       backgroundColor: cornflowerblue,
       appBar: PreferredSize(
@@ -217,32 +268,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             Row(
               children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 50.w,
-                      backgroundImage: imgPath != null
-                          ? (imgPath!.startsWith('http') ||
-                                  imgPath!.startsWith('/uploads')
-                              ? NetworkImage(
-                                  '${ApiEndpoints.baseUrl}$imgPath') // صورة من النت
-                              : FileImage(File(imgPath!))
-                                  as ImageProvider) // صورة من الجهاز
-                          : AssetImage('assets/img/pic1.jpg')
-                              as ImageProvider, // صورة افتراضية
-                    ),
-                    Positioned(
-                      left: 26.r,
-                      bottom: 28.r,
-                      child: IconButton(
-                        onPressed: showImagePicker,
-                        icon:
-                            Icon(Icons.add_photo_alternate_outlined, size: 25),
-                        color: Colors.grey,
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.white,
+                        backgroundImage: imagePath == null
+                            ? null // إذا مفيش صورة، خلي الخلفية بيضاء
+                            : imagePath is String &&
+                                    imagePath.startsWith('http')
+                                ? NetworkImage(imagePath) // صورة من URL
+                                : imagePath is String
+                                    ? NetworkImage(
+                                        '${ApiEndpoints.baseUrl}${imagePath.replaceAll("\\", "/")}')
+                                    : imagePath is Uint8List
+                                        ? MemoryImage(
+                                            imagePath) // صورة من الجهاز
+                                        : null, // لو النوع غير معروف
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        left: 26,
+                        bottom: 23,
+                        child: IconButton(
+                          onPressed: () {
+                            showModel(context);
+                          },
+                          icon: const Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 30,
+                          ),
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Widthspace(width: 20),
                 Column(
@@ -427,12 +487,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(
                       width: 155.w,
                       child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your Birth Date';
-                          }
-                          return null;
-                        },
                         controller: dateController,
                         cursorColor: Colors.black,
                         keyboardType: TextInputType.text,
@@ -512,74 +566,127 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 )
               ],
             ),
-            hieghtspace(hieght: 20),
+            hieghtspace(hieght: 10),
             Text("Education/ Occupation",
                 style: AppStyles().monwhite16w600style),
-            hieghtspace(hieght: 10),
+            hieghtspace(hieght: 5),
             TextFormFieldWidget(
               colors: cornflowerblue,
               controller: educationController,
               width: double.infinity,
             ),
-            hieghtspace(hieght: 20),
-            Text("Skill/ Expertise", style: AppStyles().monwhite16w600style),
             hieghtspace(hieght: 10),
+            Text("Skill/ Expertise", style: AppStyles().monwhite16w600style),
+            hieghtspace(hieght: 5),
             TextFormFieldWidget(
               colors: cornflowerblue,
               width: double.infinity,
               controller: skillController,
             ),
-            hieghtspace(hieght: 20),
-            Text("Phone Number", style: AppStyles().monwhite16w600style),
             hieghtspace(hieght: 10),
+            Text("Phone Number", style: AppStyles().monwhite16w600style),
+            hieghtspace(hieght: 5),
             TextFormFieldWidget(
               colors: cornflowerblue,
               width: double.infinity,
               controller: phoneController,
             ),
+            hieghtspace(hieght: 10),
+            Text("Interests", style: AppStyles().monwhite16w600style),
+            hieghtspace(hieght: 5),
+            TextFormFieldWidget(
+              colors: cornflowerblue,
+              width: double.infinity,
+              controller: interestsController,
+            ),
             hieghtspace(hieght: 30),
 
             ElvatedButtonPrfileWidget(
-              onPressed: () {
-                Navigator.pop(context);
-                final provider =
-                    Provider.of<UpdateUserProvider>(context, listen: false);
+              height: 50,
+              onPressed: () async {
+                if (updateUserProvider.isLoading) return;
 
-                provider.updateUser(
-                  firstName: nameController.text,
-                  lastName: nameController.text,
-                  email: userProvider.user?.email ?? '',
-                  address: {
-                    "street": streetController.text,
-                    "city": cityController.text,
-                    "state": stateController.text,
-                  },
-                  phone: userProvider.user!.phone.toString(),
-                  bD: dateController.text,
-                  bio: bioController.text,
-                  gender: dropdwonvalue,
-                  userName: subnameController.text,
-                  interested: userProvider.user?.interested ?? [],
-                );
+                File? imageFile;
+                if (imagePath != null && imagePath is Uint8List) {
+                  imageFile = await convertUint8ListToFile(
+                      imagePath as Uint8List,
+                      'profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                }
 
-                Provider.of<EditProfileProvider>(context, listen: false)
-                    .updateProfile(
-                        newSubName: subnameController.text,
-                        newBio: bioController.text,
-                        newCity: cityController.text,
-                        newName: nameController.text,
-                        newSkill: skillController.text,
-                        newEducation: educationController.text,
-                        newDateOfBirth: dateController.text,
-                        newGender: genderController.text,
-                        newStreet: streetController.text,
-                        newState: selectedState,
-                        newImgpath: imgPath ?? '');
+                final address = {
+                  'state':
+                      selectedState != "State" ? selectedState : widget.state,
+                  'city': cityController.text.isNotEmpty
+                      ? cityController.text
+                      : widget.city,
+                  'street': streetController.text.isNotEmpty
+                      ? streetController.text
+                      : widget.street,
+                };
+
+                final interested = interestsController.text.isNotEmpty
+                    ? interestsController.text
+                        .split(',')
+                        .map((e) => e.trim())
+                        .toList()
+                    : widget.interests.split(',').map((e) => e.trim()).toList();
+
+                try {
+                  await updateUserProvider.updateFullProfile(
+                    firstName: nameController.text.isNotEmpty
+                        ? nameController.text
+                        : widget.firstName,
+                    lastName: nameController.text.isNotEmpty
+                        ? nameController.text
+                        : widget.lastName,
+                    address: address,
+                    phone: phoneController.text.isNotEmpty
+                        ? phoneController.text
+                        : widget.phone,
+                    bD: dateController.text.isNotEmpty
+                        ? dateController.text
+                        : widget.dateOfBirth,
+                    bio: bioController.text.isNotEmpty
+                        ? bioController.text
+                        : widget.bio,
+                    gender: dropdwonvalue != "Gender"
+                        ? dropdwonvalue
+                        : widget.gender,
+                    userName: subnameController.text.isNotEmpty
+                        ? subnameController.text
+                        : widget.subname,
+                    interested: interested,
+                    imageFile: imageFile,
+                  );
+
+                  await userProvider.fetchUserProfile();
+
+                  if (mounted) {
+                    showAnimatedSnackDialog(
+                      context,
+                      message: 'Updated successfully',
+                      type: AnimatedSnackBarType.success,
+                    );
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    showAnimatedSnackDialog(
+                      context,
+                      message: 'Update failed, try again',
+                      type: AnimatedSnackBarType.error,
+                    );
+                  }
+                }
               },
-              text: 'Save Changes',
+              text: updateUserProvider.isLoading
+                  ? 'Save Changes...'
+                  : 'Save Changes',
+              fontSize: 20,
               color: white,
               width: double.infinity,
             ),
+            hieghtspace(hieght: 20),
           ],
         ),
       ),

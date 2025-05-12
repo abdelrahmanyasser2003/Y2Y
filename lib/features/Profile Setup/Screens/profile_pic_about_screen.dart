@@ -1,14 +1,16 @@
-import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/elvated_button_widget.dart';
 import 'package:y2y/core/widges/text_form_field_widget.dart';
 import 'package:y2y/features/Profile%20Setup/Screens/interest_selection_screen.dart';
-import 'package:y2y/features/user/provider/edit_profile_provider.dart';
+import 'package:y2y/features/user/provider/update_user_provider.dart';
 
 class Profilepicabout extends StatefulWidget {
   const Profilepicabout({super.key});
@@ -41,27 +43,33 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
     }
   }
 
-  String? imgPath;
+  dynamic imagePath;
 
   Future<void> uploadImage2Screen(ImageSource source) async {
     final XFile? pickedImg = await ImagePicker().pickImage(source: source);
     if (pickedImg != null) {
       Uint8List bytes = await pickedImg.readAsBytes();
-      String base64String = base64Encode(bytes); // تحويل الصورة إلى Base64
       setState(() {
-        imgPath = base64String; // تخزين الصورة كـ String
+        imagePath = bytes;
       });
     }
   }
 
-  showmodel() {
+  Future<File> convertUint8ListToFile(Uint8List data, String filename) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File(path.join(tempDir.path, filename));
+    return await file.writeAsBytes(data);
+  }
+
+  showModel(BuildContext context) {
     return showModalBottomSheet(
-      context: context,
+      context: context, // استخدام BuildContext هنا
       builder: (BuildContext context) {
         return Container(
-          color: skyblue,
+          color:
+              cornflowerblue, // تغيير skyblue إلى Colors.skyBlue أو أي لون آخر
           padding: const EdgeInsets.all(10),
-          height: 120.h,
+          height: 120,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -69,41 +77,41 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                 onTap: () async {
                   await uploadImage2Screen(ImageSource.camera);
                 },
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.camera,
                       size: 30,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 50,
+                      width: 11,
                     ),
                     Text(
                       "From Camera",
-                      style: TextStyle(fontSize: 20.sp),
+                      style: TextStyle(fontSize: 20),
                     )
                   ],
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 40,
+              const SizedBox(
+                height: 22,
               ),
               GestureDetector(
                 onTap: () {
                   uploadImage2Screen(ImageSource.gallery);
                 },
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.photo_outlined,
                       size: 30,
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 50,
+                      width: 11,
                     ),
                     Text(
                       "From Gallery",
-                      style: TextStyle(fontSize: 20.sp),
+                      style: TextStyle(fontSize: 20),
                     )
                   ],
                 ),
@@ -164,30 +172,21 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                 Center(
                   child: Stack(
                     children: [
-                      imgPath == null
-                          ? CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 71,
+                      imagePath == null
+                          ? const CircleAvatar(
+                              backgroundColor: white,
+                              radius: 45,
                             )
-                          : imgPath!
-                                  .contains("http") // إذا كانت الصورة رابط URL
-                              ? CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage:
-                                      NetworkImage(imgPath!), // صورة من الرابط
-                                )
-                              : CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage: MemoryImage(base64Decode(
-                                      imgPath!)), // تحويل Base64 إلى Uint8List
-                                ),
+                          : CircleAvatar(
+                              radius: 45,
+                              backgroundImage: MemoryImage(imagePath!),
+                            ),
                       Positioned(
-                        left: 48,
-                        bottom: 48,
+                        left: 22,
+                        bottom: 23,
                         child: IconButton(
                           onPressed: () {
-                            // هنا يمكنك إضافة كود لاختيار الصورة من المعرض أو الكاميرا
-                            showmodel();
+                            showModel(context);
                           },
                           icon: const Icon(
                             Icons.add_photo_alternate_outlined,
@@ -383,15 +382,28 @@ class _ProfilepicaboutState extends State<Profilepicabout> {
                     width: double.infinity,
                     child: ElvatedButtonWidget(
                       text: 'Next',
-                      onPressed: () {
-                        Provider.of<EditProfileProvider>(context, listen: false)
-                            .setUpProfile(
-                                newsubName: userNameController.text,
-                                newBio: bioController.text,
-                                newEducation: educationController.text,
-                                newSkill: skillController.text,
-                                newDateOfBirth: dateController.text,
-                                newImgpath: imgPath ?? '');
+                      onPressed: () async {
+                        // List<String> types = typesController.text
+                        // .split(',')
+                        // .map((e) => e.trim())
+                        // .toList();
+
+                        File? imageFile;
+                        if (imagePath != null && imagePath is Uint8List) {
+                          imageFile = await convertUint8ListToFile(
+                              imagePath as Uint8List,
+                              'profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                        }
+                        final provider = Provider.of<UpdateUserProvider>(
+                            context,
+                            listen: false);
+
+                        provider.updateFullProfile(
+                            imageFile: imageFile,
+                            bD: dateController.text,
+                            bio: bioController.text,
+                            userName: userNameController.text);
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(

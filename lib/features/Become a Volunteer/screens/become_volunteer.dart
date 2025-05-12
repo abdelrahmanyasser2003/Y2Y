@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:y2y/core/styling/app_colors.dart';
 import 'package:y2y/core/widges/app_bar_widget.dart';

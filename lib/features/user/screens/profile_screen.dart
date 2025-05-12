@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:y2y/core/networking/api_endpoints.dart';
 import 'package:y2y/core/styling/app_colors.dart';
@@ -110,20 +111,35 @@ class _ProfilepageState extends State<Profilepage> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 EditProfileScreen(
-                                              bio: signupdetails.bio,
+                                              interests: (userProvider
+                                                          .user?.interested ??
+                                                      [])
+                                                  .join(', '),
+                                              imgPath: userProvider
+                                                      .user?.profileImage ??
+                                                  '',
+                                              bio: userProvider.user?.bio ?? '',
                                               city: userProvider
                                                       .user?.address?.city ??
                                                   "",
                                               dateOfBirth:
-                                                  signupdetails.dateOfBirth,
+                                                  userProvider.user!.bd != null
+                                                      ? DateFormat('yyyy-MM-dd')
+                                                          .format(userProvider
+                                                              .user!.bd!)
+                                                      : '',
                                               education: userProvider
                                                       .user?.education ??
                                                   '',
                                               gender:
                                                   userProvider.user?.gender ??
                                                       '',
-                                              name:
-                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              firstName: userProvider
+                                                      .user?.firstName ??
+                                                  '',
+                                              lastName:
+                                                  userProvider.user?.lastName ??
+                                                      "",
                                               skill: userProvider
                                                       .user?.skills?.first ??
                                                   "",
@@ -136,9 +152,6 @@ class _ProfilepageState extends State<Profilepage> {
                                               subname:
                                                   userProvider.user?.userName ??
                                                       '',
-                                              imgpath: userProvider
-                                                      .user?.profileImage ??
-                                                  '',
                                               phone: userProvider.user?.phone ??
                                                   '',
                                             ),
@@ -159,7 +172,11 @@ class _ProfilepageState extends State<Profilepage> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 EditProfileScreen(
-                                              bio: signupdetails.bio,
+                                              interests: (userProvider
+                                                          .user?.interested ??
+                                                      [])
+                                                  .join(', '),
+                                              bio: userProvider.user?.bio ?? '',
                                               city: userProvider
                                                       .user?.address?.city ??
                                                   "",
@@ -171,8 +188,12 @@ class _ProfilepageState extends State<Profilepage> {
                                               gender:
                                                   userProvider.user?.gender ??
                                                       '',
-                                              name:
-                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              firstName: userProvider
+                                                      .user?.firstName ??
+                                                  '',
+                                              lastName:
+                                                  userProvider.user?.lastName ??
+                                                      "",
                                               skill: userProvider
                                                       .user?.skills?.first ??
                                                   "",
@@ -185,7 +206,7 @@ class _ProfilepageState extends State<Profilepage> {
                                               subname:
                                                   userProvider.user?.userName ??
                                                       '',
-                                              imgpath: userProvider
+                                              imgPath: userProvider
                                                       .user?.profileImage ??
                                                   '',
                                               phone: userProvider.user?.phone ??
@@ -208,7 +229,11 @@ class _ProfilepageState extends State<Profilepage> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 EditProfileScreen(
-                                              bio: signupdetails.bio,
+                                              interests: (userProvider
+                                                          .user?.interested ??
+                                                      [])
+                                                  .join(', '),
+                                              bio: userProvider.user?.bio ?? '',
                                               city: userProvider
                                                       .user?.address?.city ??
                                                   "",
@@ -220,8 +245,12 @@ class _ProfilepageState extends State<Profilepage> {
                                               gender:
                                                   userProvider.user?.gender ??
                                                       '',
-                                              name:
-                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
+                                              firstName: userProvider
+                                                      .user?.firstName ??
+                                                  '',
+                                              lastName:
+                                                  userProvider.user?.lastName ??
+                                                      "",
                                               skill: userProvider
                                                       .user?.skills?.first ??
                                                   "",
@@ -234,7 +263,7 @@ class _ProfilepageState extends State<Profilepage> {
                                               subname:
                                                   userProvider.user?.userName ??
                                                       '',
-                                              imgpath: userProvider
+                                              imgPath: userProvider
                                                       .user?.profileImage ??
                                                   '',
                                               phone: userProvider.user?.phone ??
@@ -256,7 +285,11 @@ class _ProfilepageState extends State<Profilepage> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 EditProfileScreen(
-                                              bio: signupdetails.bio,
+                                              interests: (userProvider
+                                                          .user?.interested ??
+                                                      [])
+                                                  .join(', '),
+                                              bio: userProvider.user?.bio ?? '',
                                               city: userProvider
                                                       .user?.address?.city ??
                                                   "",
@@ -268,12 +301,15 @@ class _ProfilepageState extends State<Profilepage> {
                                               gender:
                                                   userProvider.user?.gender ??
                                                       '',
-                                              name:
-                                                  '${userProvider.user?.firstName ?? ''} ${userProvider.user?.lastName ?? ''}',
-                                              skill: userProvider
-                                                      .user?.skills?.join(', ') ??
+                                              firstName: userProvider
+                                                      .user?.firstName ??
                                                   '',
-                                                  
+                                              lastName:
+                                                  userProvider.user?.lastName ??
+                                                      "",
+                                              skill: userProvider.user?.skills
+                                                      ?.join(', ') ??
+                                                  '',
                                               state: userProvider
                                                       .user?.address?.state ??
                                                   "",
@@ -283,7 +319,7 @@ class _ProfilepageState extends State<Profilepage> {
                                               subname:
                                                   userProvider.user?.userName ??
                                                       '',
-                                              imgpath: userProvider
+                                              imgPath: userProvider
                                                       .user?.profileImage ??
                                                   '',
                                               phone: userProvider.user?.phone ??
@@ -421,7 +457,7 @@ class _ProfilepageState extends State<Profilepage> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    signupdetails.bio,
+                                    userProvider.user?.bio ?? '',
                                     overflow: TextOverflow.visible,
                                     style: TextStyle(
                                       color: cornflowerblue,
@@ -453,9 +489,12 @@ class _ProfilepageState extends State<Profilepage> {
                               children: [
                                 Text("Date of Birth",
                                     style: AppStyles().monwhite16w600style),
+                                hieghtspace(hieght: 5),
                                 ProfileContainerWidget(
                                   width: 155.w,
-                                  text: signupdetails.dateOfBirth,
+                                  text: DateFormat('dd/MM/yyyy').format(
+                                      DateTime.parse(
+                                          userProvider.user!.bd!.toString())),
                                 ),
                               ],
                             ),
@@ -481,7 +520,7 @@ class _ProfilepageState extends State<Profilepage> {
                         hieghtspace(hieght: 10),
                         Text("Education/ Occupation",
                             style: AppStyles().monwhite16w600style),
-                        hieghtspace(hieght: 10),
+                        hieghtspace(hieght: 5),
                         ProfileContainerWidget(
                           text: userProvider.user?.education ?? '',
                           width: double.infinity,
@@ -489,7 +528,7 @@ class _ProfilepageState extends State<Profilepage> {
                         hieghtspace(hieght: 10),
                         Text("Skill/ Expertise",
                             style: AppStyles().monwhite16w600style),
-                        hieghtspace(hieght: 10),
+                        hieghtspace(hieght: 5),
                         ProfileContainerWidget(
                           text: (userProvider.user?.skills != null &&
                                   userProvider.user!.skills!.isNotEmpty)
@@ -500,9 +539,18 @@ class _ProfilepageState extends State<Profilepage> {
                         hieghtspace(hieght: 10),
                         Text("Phone Number",
                             style: AppStyles().monwhite16w600style),
-                        hieghtspace(hieght: 10),
+                        hieghtspace(hieght: 5),
                         ProfileContainerWidget(
                           text: userProvider.user?.phone ?? '',
+                          width: double.infinity,
+                        ),
+                        hieghtspace(hieght: 10),
+                        Text("Interests",
+                            style: AppStyles().monwhite16w600style),
+                        hieghtspace(hieght: 5),
+                        ProfileContainerWidget(
+                          text:
+                              (userProvider.user?.interested ?? []).join(', '),
                           width: double.infinity,
                         ),
                       ],

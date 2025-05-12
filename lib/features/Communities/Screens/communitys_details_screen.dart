@@ -41,7 +41,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
   @override
   Widget build(BuildContext context) {
     final Volunteer? volunteer = widget.community.volunteer;
-    final List<Members> members = widget.community.members ?? [];
+    final List<Volunteer> members = widget.community.members ?? [];
     final displayedRequests =
         showAllRequests ? members : members.take(2).toList();
 
@@ -548,7 +548,7 @@ class _CommunityDetailsState extends State<CommunityDetails> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           UserDetialsMembersScreen(
-                                              members: volunteer as Members),
+                                              members: volunteer),
                                     ),
                                   );
                                 },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:y2y/features/Communities/model/get_all_communities_model.dart';
-import 'package:y2y/features/Communities/model/get_all_communities_voulnteer_model.dart';
 import 'package:y2y/features/Communities/repo/get_all_coomunities_repo.dart';
 
 class CommunitiesProvider with ChangeNotifier {

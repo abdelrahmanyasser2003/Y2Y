@@ -7,7 +7,7 @@ class GetAllCommunitiesModel {
   String? image;
   Category? category;
   Category? subcategory;
-  List<Members>? members;
+  List<Volunteer>? members;
   int? limitOfUsers;
   String? roles;
   Location? location;
@@ -65,18 +65,9 @@ class GetAllCommunitiesModel {
         subcategory: json["subcategory"] == null
             ? null
             : Category.fromJson(json["subcategory"]),
-        members: json["members"] == null
-            ? []
-            : List<Members>.from(json["members"]!.map((x) {
-                if (x is String) {
-                  // إذا كان العنصر من نوع String، قد تحتاج إلى تحويله أو التعامل معه بطريقة مختلفة
-                  return Volunteer.fromJson(
-                      {"name": x}); // مثال: تحويله إلى خريطة
-                } else {
-                  return Volunteer.fromJson(
-                      x); // إذا كان العنصر بالفعل Map<String, dynamic>
-                }
-              })),
+        members: (json['members'] as List?)
+            ?.map((e) => Volunteer.fromJson(e))
+            .toList(),
         limitOfUsers: json["limitOfUsers"],
         roles: json["roles"],
         location: json["location"] == null

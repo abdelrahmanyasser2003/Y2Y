@@ -1,12 +1,4 @@
-// To parse this JSON data, do
-//
-//     final user = userFromJson(jsonString);
 
-import 'dart:convert';
-
-User userFromJson(String str) => User.fromJson(json.decode(str));
-
-String userToJson(User data) => json.encode(data.toJson());
 
 class User {
     bool? success;
@@ -40,7 +32,7 @@ class UserModel {
     String? status;
     String? confirmEmail;
     List<String>? interested;
-    List<dynamic>? communities;
+    List<Community>? communities;
     DateTime? createdAt;
     DateTime? updatedAt;
     int? v;
@@ -50,6 +42,10 @@ class UserModel {
     String? vulonteerReqStatus;
     String? education;
     IdImages? idImages;
+    DateTime? bd;
+    String? bio;
+    DateTime? expireDateOtp;
+    int? otp;
 
     UserModel({
         this.id,
@@ -73,6 +69,10 @@ class UserModel {
         this.vulonteerReqStatus,
         this.education,
         this.idImages,
+        this.bd,
+        this.bio,
+        this.expireDateOtp,
+        this.otp,
     });
 
     factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -87,7 +87,7 @@ class UserModel {
         status: json["status"],
         confirmEmail: json["confirmEmail"],
         interested: json["interested"] == null ? [] : List<String>.from(json["interested"]!.map((x) => x)),
-        communities: json["communities"] == null ? [] : List<dynamic>.from(json["communities"]!.map((x) => x)),
+        communities: json["communities"] == null ? [] : List<Community>.from(json["communities"]!.map((x) => Community.fromJson(x))),
         createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
         updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
@@ -97,6 +97,10 @@ class UserModel {
         vulonteerReqStatus: json["vulonteerReqStatus"],
         education: json["education"],
         idImages: json["IDImages"] == null ? null : IdImages.fromJson(json["IDImages"]),
+        bd: json["BD"] == null ? null : DateTime.parse(json["BD"]),
+        bio: json["bio"],
+        expireDateOtp: json["expireDateOTP"] == null ? null : DateTime.parse(json["expireDateOTP"]),
+        otp: json["OTP"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -111,7 +115,7 @@ class UserModel {
         "status": status,
         "confirmEmail": confirmEmail,
         "interested": interested == null ? [] : List<dynamic>.from(interested!.map((x) => x)),
-        "communities": communities == null ? [] : List<dynamic>.from(communities!.map((x) => x)),
+        "communities": communities == null ? [] : List<dynamic>.from(communities!.map((x) => x.toJson())),
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
@@ -121,6 +125,10 @@ class UserModel {
         "vulonteerReqStatus": vulonteerReqStatus,
         "education": education,
         "IDImages": idImages?.toJson(),
+        "BD": bd?.toIso8601String(),
+        "bio": bio,
+        "expireDateOTP": expireDateOtp?.toIso8601String(),
+        "OTP": otp,
     };
 }
 
@@ -145,6 +153,26 @@ class Address {
         "state": state,
         "city": city,
         "street": street,
+    };
+}
+
+class Community {
+    String? community;
+    String? status;
+
+    Community({
+        this.community,
+        this.status,
+    });
+
+    factory Community.fromJson(Map<String, dynamic> json) => Community(
+        community: json["community"],
+        status: json["status"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "community": community,
+        "status": status,
     };
 }
 

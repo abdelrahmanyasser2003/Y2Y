@@ -35,6 +35,7 @@ import 'package:y2y/features/user/provider/profile_provider.dart';
 import 'package:y2y/features/user/provider/update_user_provider.dart';
 import 'package:y2y/features/user/provider/user_chat_provider.dart';
 import 'package:y2y/features/user/provider/user_details_provider.dart';
+import 'package:y2y/features/user/repo/update_user_repo.dart';
 
 void main() {
   DioHelper.initDio();
@@ -61,7 +62,8 @@ void main() {
         create: (ctx) => GetAllCommunitiesOfSpecificSubcategoryProvider()),
     ChangeNotifierProvider(create: (ctx) => GetUserProvider()),
     ChangeNotifierProvider(create: (ctx) => EditProfileProvider()),
-    ChangeNotifierProvider(create: (ctx) => UpdateUserProvider()),
+    ChangeNotifierProvider(
+        create: (ctx) => UpdateUserProvider(UpdateUserRepo())),
     ChangeNotifierProvider(create: (ctx) => LogoutProvider()),
     ChangeNotifierProvider(create: (ctx) => BecomeVolunteerProvider()),
     ChangeNotifierProvider(create: (ctx) => OpportunityDeleteProvider()),
